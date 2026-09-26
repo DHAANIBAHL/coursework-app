@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx eslint *)",
+      "Bash(node --input-type=module -e \"import c from './src/data/course-content/artificial-intelligence.js'; console.log\\(c.lessons.length, c.quizzes.map\\(q=>q.id+':'+q.questions.length\\).join\\(' '\\), 'quiz' in c\\); for \\(const q of c.quizzes\\) for \\(const x of q.questions\\) if \\(!x.options.some\\(o=>o.id===x.correct\\)\\) console.log\\('BAD', q.id, x.id\\); console.log\\(c.lessons.map\\(\\(l,i\\)=>i+1+' '+l.title\\).join\\('\\\\n'\\)\\)\")",
+      "PowerShell(node --input-type=module -e \"import c from './src/data/course-content/sql-databases.js'; console.log\\(c.lessons.length, c.quizzes.map\\(q=>q.id+':'+q.questions.length\\).join\\(' '\\), 'quiz' in c\\); for \\(const q of c.quizzes\\) for \\(const x of q.questions\\) if \\(!x.options.some\\(o=>o.id===x.correct\\)\\) console.log\\('BAD', q.id, x.id\\); c.lessons.forEach\\(\\(l,i\\)=>console.log\\(i+1, l.title\\)\\)\")",
+      "Bash(npm run *)"
+    ]
+  }
+}
