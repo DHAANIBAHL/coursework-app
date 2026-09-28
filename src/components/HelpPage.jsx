@@ -69,29 +69,29 @@ const sections = [
 
 export default function HelpPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
       <Header />
 
       <main className="mx-auto max-w-3xl px-6 py-12">
-        <h1 className="text-4xl font-semibold text-slate-900">Help</h1>
-        <p className="mt-3 text-lg text-slate-600">
+        <h1 className="text-4xl font-semibold text-slate-900 dark:text-slate-100">Help</h1>
+        <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
           Answers to common questions about courses, quizzes, and your account.
         </p>
 
         {sections.map((section) => (
           <section key={section.title} className="mt-12">
-            <h2 className="text-xl font-semibold text-slate-900">{section.title}</h2>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{section.title}</h2>
             <div className="mt-4 space-y-3">
               {section.questions.map((item) => (
                 <details
                   key={item.q}
-                  className="group rounded-lg border border-slate-200 open:border-slate-300 open:shadow-sm"
+                  className="group rounded-lg border border-slate-200 dark:border-slate-800 open:border-slate-300 dark:open:border-slate-700 open:shadow-sm"
                 >
-                  <summary className="flex cursor-pointer list-none items-center gap-3 p-4 font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 p-4 font-medium text-slate-900 dark:text-slate-100 [&::-webkit-details-marker]:hidden">
                     <span className="flex-1">{item.q}</span>
-                    <ChevronDown className="size-4 text-slate-400 transition-transform group-open:rotate-180" />
+                    <ChevronDown className="size-4 text-slate-400 dark:text-slate-500 transition-transform group-open:rotate-180" />
                   </summary>
-                  <p className="border-t border-slate-200 px-4 pb-4 pt-3 leading-relaxed text-slate-700">
+                  <p className="border-t border-slate-200 dark:border-slate-800 px-4 pb-4 pt-3 leading-relaxed text-slate-700 dark:text-slate-300">
                     {item.a}
                   </p>
                 </details>
@@ -100,9 +100,9 @@ export default function HelpPage() {
           </section>
         ))}
 
-        <div className="mt-12 rounded-lg bg-blue-50 p-6">
-          <h2 className="text-xl font-semibold text-slate-900">Still stuck?</h2>
-          <p className="mt-1 text-slate-600">Send us a message and tell us what's going on.</p>
+        <div className="mt-12 rounded-lg bg-blue-50 dark:bg-blue-950/50 p-6">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Still stuck?</h2>
+          <p className="mt-1 text-slate-600 dark:text-slate-400">Send us a message and tell us what's going on.</p>
           <Link to="/contact" className={`${buttonVariants()} mt-4`}>
             Contact us
           </Link>

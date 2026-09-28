@@ -13,11 +13,11 @@ export default function QuizPage() {
 
   if (!quiz) {
     return (
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-white dark:bg-slate-950">
         <Header />
         <main className="mx-auto max-w-3xl px-6 py-16">
-          <h1 className="text-2xl font-semibold text-slate-900">Quiz not found</h1>
-          <p className="mt-2 text-slate-600">
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Quiz not found</h1>
+          <p className="mt-2 text-slate-600 dark:text-slate-400">
             {course ? "This course doesn't have a quiz at this address." : "There's no course at this address."}
           </p>
           <Link to={course ? `/course/${slug}` : "/"} className={`${buttonVariants()} mt-6`}>
@@ -61,33 +61,33 @@ function Quiz({ course, quiz }) {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-slate-950">
       <Header />
 
       <main className="mx-auto max-w-3xl px-6 py-12">
         <Link
           to={`/course/${slug}`}
-          className="inline-flex items-center gap-2 rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition-colors hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+          className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
         >
           <ArrowLeft className="size-4" />
           Back to the course
         </Link>
 
-        <p className="mt-10 text-sm font-medium text-blue-600">
+        <p className="mt-10 text-sm font-medium text-blue-600 dark:text-blue-400">
           {title} · Quiz {quizNumber} of {quizzes.length}
         </p>
-        <h1 className="mt-2 text-4xl font-semibold text-slate-900">{quiz.title}</h1>
-        <p className="mt-3 text-lg text-slate-600">
+        <h1 className="mt-2 text-4xl font-semibold text-slate-900 dark:text-slate-100">{quiz.title}</h1>
+        <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
           {quiz.description} {questions.length} questions. Pick one answer for each, then check your results.
         </p>
 
         {submitted && (
-          <div className="mt-8 rounded-lg bg-blue-50 p-6">
-            <p className="text-sm font-medium text-blue-600">Your score</p>
-            <p className="mt-1 text-3xl font-semibold text-slate-900">
+          <div className="mt-8 rounded-lg bg-blue-50 dark:bg-blue-950/50 p-6">
+            <p className="text-sm font-medium text-blue-600 dark:text-blue-400">Your score</p>
+            <p className="mt-1 text-3xl font-semibold text-slate-900 dark:text-slate-100">
               {score} / {questions.length}
             </p>
-            <p className="mt-1 text-slate-600">
+            <p className="mt-1 text-slate-600 dark:text-slate-400">
               {score === questions.length
                 ? "Perfect. You've got this section down."
                 : "Review the explanations below, then give it another go."}
@@ -115,23 +115,23 @@ function Quiz({ course, quiz }) {
               <fieldset
                 key={question.id}
                 disabled={submitted}
-                className="rounded-lg border border-slate-200 p-5"
+                className="rounded-lg border border-slate-200 dark:border-slate-800 p-5"
               >
-                <legend className="px-1 text-sm text-blue-600">Question {index + 1}</legend>
-                <p className="font-medium text-slate-900">{question.prompt}</p>
+                <legend className="px-1 text-sm text-blue-600 dark:text-blue-400">Question {index + 1}</legend>
+                <p className="font-medium text-slate-900 dark:text-slate-100">{question.prompt}</p>
 
                 <div className="mt-4 space-y-2">
                   {question.options.map((option) => {
                     const selected = chosen === option.id;
-                    let tone = "border-slate-200 hover:border-slate-300 hover:bg-slate-50";
-                    if (!submitted && selected) tone = "border-blue-600 bg-blue-50";
-                    if (submitted && option.id === question.correct) tone = "border-green-600 bg-green-50";
-                    else if (submitted && selected) tone = "border-red-600 bg-red-50";
+                    let tone = "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800";
+                    if (!submitted && selected) tone = "border-blue-600 bg-blue-50 dark:bg-blue-950/50";
+                    if (submitted && option.id === question.correct) tone = "border-green-600 bg-green-50 dark:bg-green-950/50";
+                    else if (submitted && selected) tone = "border-red-600 bg-red-50 dark:bg-red-950/50";
 
                     return (
                       <label
                         key={option.id}
-                        className={`flex items-center gap-3 rounded-md border p-3 text-slate-700 transition-colors ${tone} ${submitted ? "" : "cursor-pointer"}`}
+                        className={`flex items-center gap-3 rounded-md border p-3 text-slate-700 dark:text-slate-300 transition-colors ${tone} ${submitted ? "" : "cursor-pointer"}`}
                       >
                         <input
                           type="radio"
@@ -149,7 +149,7 @@ function Quiz({ course, quiz }) {
 
                 {submitted && (
                   <div
-                    className={`mt-4 flex gap-2 text-sm ${isCorrect ? "text-green-700" : "text-red-700"}`}
+                    className={`mt-4 flex gap-2 text-sm ${isCorrect ? "text-green-700 dark:text-green-300" : "text-red-700 dark:text-red-300"}`}
                   >
                     {isCorrect ? (
                       <CircleCheck className="mt-0.5 size-4 shrink-0" />
@@ -158,7 +158,7 @@ function Quiz({ course, quiz }) {
                     )}
                     <p>
                       <span className="font-medium">{isCorrect ? "Correct." : "Not quite."}</span>{" "}
-                      <span className="text-slate-700">{question.explanation}</span>
+                      <span className="text-slate-700 dark:text-slate-300">{question.explanation}</span>
                     </p>
                   </div>
                 )}
@@ -171,7 +171,7 @@ function Quiz({ course, quiz }) {
               <Button type="submit" size="lg" disabled={answeredCount < questions.length}>
                 Check my answers
               </Button>
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 {answeredCount} of {questions.length} answered
               </p>
             </div>

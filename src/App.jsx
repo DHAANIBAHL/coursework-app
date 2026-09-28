@@ -28,7 +28,7 @@ function RequireAuth({ children }) {
   // Wait for the server to say whether we're logged in before deciding.
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500">
+      <div className="flex min-h-screen items-center justify-center text-sm text-slate-500 dark:text-slate-400">
         Loading…
       </div>
     );
@@ -42,9 +42,9 @@ function RequireAuth({ children }) {
 function NotFound() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
-      <h1 className="text-2xl font-semibold text-slate-900">Page not found</h1>
-      <p className="mt-2 text-slate-600">This page doesn't exist yet.</p>
-      <Link to="/" className="mt-4 inline-block text-blue-600 hover:underline">
+      <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Page not found</h1>
+      <p className="mt-2 text-slate-600 dark:text-slate-400">This page doesn't exist yet.</p>
+      <Link to="/" className="mt-4 inline-block text-blue-600 dark:text-blue-400 hover:underline">
         Back to courses
       </Link>
     </main>

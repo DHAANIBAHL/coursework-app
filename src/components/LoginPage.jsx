@@ -56,7 +56,7 @@ export default function LoginPage() {
       footer={
         <>
           New to Coursework?{" "}
-          <Link to="/signup" state={{ from: redirectTo }} className="font-medium text-blue-600 hover:underline">
+          <Link to="/signup" state={{ from: redirectTo }} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
             Create an account
           </Link>
         </>
@@ -65,15 +65,15 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} noValidate className="space-y-5">
         <FormError message={formError} />
         {noAccountFor && (
-          <div role="alert" className="rounded-md border border-blue-200 bg-blue-50 px-3 py-3 text-sm text-slate-700">
+          <div role="alert" className="rounded-md border border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950/50 px-3 py-3 text-sm text-slate-700 dark:text-slate-300">
             <p>
-              There's no account for <span className="font-medium text-slate-900">{noAccountFor}</span>. Check the
+              There's no account for <span className="font-medium text-slate-900 dark:text-slate-100">{noAccountFor}</span>. Check the
               spelling, or create a new account.
             </p>
             <Link
               to="/signup"
               state={{ from: redirectTo, email: noAccountFor }}
-              className="mt-2 inline-block font-medium text-blue-600 hover:underline"
+              className="mt-2 inline-block font-medium text-blue-600 dark:text-blue-400 hover:underline"
             >
               Create an account with this email
             </Link>
