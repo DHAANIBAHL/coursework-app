@@ -2,7 +2,7 @@ const cloudAndDeployment = {
   slug: "cloud-and-deployment",
   tag: "DevOps",
   title: "Cloud Computing & Deployment",
-  image: "",
+  image: "/images/Cloud Computing.png",
   color: "bg-cyan-700",
   description: "What the cloud really is, how to get your app onto it, and how to keep it running once real people use it.",
   lessons: [

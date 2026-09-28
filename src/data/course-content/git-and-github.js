@@ -2,7 +2,7 @@ const gitAndGithub = {
   slug: "git-and-github",
   tag: "Tools",
   title: "Git & GitHub",
-  image: "",
+  image: "/images/Git.png",
   color: "bg-orange-600",
   description: "Commits, branches, merges, and pull requests — how to track your code, undo mistakes, and work with other people without stepping on each other.",
   lessons: [

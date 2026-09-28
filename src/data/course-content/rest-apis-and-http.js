@@ -2,7 +2,7 @@ const restApisAndHttp = {
   slug: "rest-apis-and-http",
   tag: "Backend",
   title: "REST APIs & HTTP",
-  image: "",
+  image: "/images/RESTful API.png",
   color: "bg-emerald-600",
   description: "How clients and servers actually talk, and how to design, secure, and call APIs that are a pleasure to use.",
   lessons: [

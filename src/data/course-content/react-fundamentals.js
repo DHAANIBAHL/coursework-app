@@ -2,7 +2,7 @@ const reactFundamentals = {
   slug: "react-fundamentals",
   tag: "Frontend",
   title: "React Fundamentals",
-  image: "",
+  image: "/images/React.png",
   color: "bg-sky-600",
   description: "Components, props, state, and effects — everything you need to turn your JavaScript into real, interactive interfaces.",
   lessons: [
