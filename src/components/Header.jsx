@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
+import SearchDialog from "@/components/SearchDialog";
 import {
   BookOpen,
   ChevronDown,
@@ -9,6 +10,7 @@ import {
   LogOut,
   Mail,
   Menu,
+  Search,
   User,
   UserPlus,
   X,
@@ -41,6 +43,7 @@ export default function Header() {
   }
   const [accountOpen, setAccountOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const accountRef = useRef(null);
 
   // "Courses" counts as active on the catalog and on any course page.
@@ -51,6 +54,19 @@ export default function Header() {
     setAccountOpen(false);
     setMobileOpen(false);
   }, [pathname]);
+
+  // Ctrl+K (or Cmd+K on a Mac) opens search from anywhere.
+  useEffect(() => {
+    if (!user) return;
+    function handleKey(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSearchOpen(true);
+      }
+    }
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [user]);
 
   // Close the account menu when clicking outside it or pressing Escape.
   useEffect(() => {
@@ -95,6 +111,17 @@ export default function Header() {
 
         {/* Right-side actions (desktop) */}
         <div className="ml-auto hidden items-center gap-1 md:flex">
+          {user && (
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              className="mr-2 flex w-56 items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500 transition-colors hover:border-slate-300 hover:bg-white focus-visible:outline-2 focus-visible:outline-blue-600"
+            >
+              <Search className="size-4" />
+              <span className="flex-1 text-left">Search</span>
+              <kbd className="rounded border border-slate-200 bg-white px-1.5 font-sans text-xs text-slate-400">Ctrl K</kbd>
+            </button>
+          )}
           <Link to="/help" className={`${linkBase} ${linkIdle} inline-flex items-center gap-2`}>
             <CircleHelp className="size-4" />
             Help
@@ -160,16 +187,28 @@ export default function Header() {
           </div>
         </div>
 
-        {/* Menu button (mobile) */}
-        <button
-          type="button"
-          onClick={() => setMobileOpen((open) => !open)}
-          aria-expanded={mobileOpen}
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          className="ml-auto rounded-md p-2 text-slate-700 hover:bg-slate-100 md:hidden"
-        >
-          {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        {/* Search and menu buttons (mobile) */}
+        <div className="ml-auto flex items-center gap-1 md:hidden">
+          {user && (
+            <button
+              type="button"
+              onClick={() => setSearchOpen(true)}
+              aria-label="Search"
+              className="rounded-md p-2 text-slate-700 hover:bg-slate-100"
+            >
+              <Search className="size-5" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setMobileOpen((open) => !open)}
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            className="rounded-md p-2 text-slate-700 hover:bg-slate-100"
+          >
+            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {/* Dropdown panel (mobile) */}
@@ -203,6 +242,7 @@ export default function Header() {
           </div>
         </nav>
       )}
+      {searchOpen && <SearchDialog onClose={() => setSearchOpen(false)} />}
     </header>
   );
 }

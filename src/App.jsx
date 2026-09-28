@@ -11,10 +11,11 @@ import SignupPage from "@/components/SignupPage";
 
 // Jump back to the top of the page whenever the URL changes.
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    // Links to a spot on the page (#lesson-5) scroll there themselves.
+    if (!hash) window.scrollTo(0, 0);
+  }, [pathname, hash]);
   return null;
 }
 
