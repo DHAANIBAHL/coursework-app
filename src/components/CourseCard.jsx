@@ -19,8 +19,9 @@ export default function CourseCard({ course }) {
       {image ? (
         <img src={image} alt="" className="h-40 w-full object-cover" />
       ) : (
-        <div className={`flex h-40 items-center justify-center text-sm text-white/80 ${color}`}>
-          Course image
+        // No picture yet: show the course's topic on its color instead.
+        <div className={`flex h-40 items-center justify-center px-6 text-center ${color}`}>
+          <span className="text-2xl font-semibold text-white">{tag}</span>
         </div>
       )}
 
