@@ -1,4 +1,5 @@
-import { Link, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import Header from "@/components/Header";
 import { Badge } from "@/components/ui/badge";
@@ -9,6 +10,17 @@ export default function CoursePage() {
   // Reads ":slug" from the URL, e.g. /course/web-design -> "web-design"
   const { slug } = useParams();
   const course = getCourse(slug);
+  const { hash } = useLocation();
+
+  // A link like /course/web-design#lesson-5 (e.g. from search) opens that
+  // lesson and scrolls to it.
+  useEffect(() => {
+    const lesson = hash ? document.getElementById(hash.slice(1)) : null;
+    if (lesson?.tagName === "DETAILS") {
+      lesson.open = true;
+      lesson.scrollIntoView({ block: "start" });
+    }
+  }, [hash, slug]);
 
   if (!course) {
     return (
@@ -61,7 +73,8 @@ export default function CoursePage() {
             {lessons.map((lesson, index) => (
               <details
                 key={lesson.title}
-                className="group rounded-lg border border-slate-200 open:border-slate-300 open:shadow-sm"
+                id={`lesson-${index + 1}`}
+                className="group scroll-mt-24 rounded-lg border border-slate-200 open:border-slate-300 open:shadow-sm"
               >
                 <summary className="flex cursor-pointer list-none items-center gap-3 p-4 font-medium text-slate-900 [&::-webkit-details-marker]:hidden">
                   <span className="text-sm text-blue-600">Lesson {index + 1}</span>
