@@ -2,7 +2,7 @@ const dataStructuresAndAlgorithms = {
   slug: "data-structures-and-algorithms",
   tag: "Computer Science",
   title: "Data Structures & Algorithms",
-  image: "",
+  image: "/images/Data Structures.png",
   color: "bg-violet-600",
   description: "Measuring efficiency with Big O, core data structures, and classic searching and sorting algorithms.",
   lessons: [

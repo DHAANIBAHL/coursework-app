@@ -2,7 +2,7 @@ const typescriptBasics = {
   slug: "typescript-basics",
   tag: "Programming",
   title: "TypeScript Basics",
-  image: "",
+  image: "/images/TypeScript.png",
   color: "bg-blue-700",
   description: "Types, interfaces, generics, and typed React props — the JavaScript you already know, with mistakes caught before you run it.",
   lessons: [
