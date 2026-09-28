@@ -61,7 +61,7 @@ export default function SearchDialog({ onClose }) {
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-start justify-center bg-slate-900/40 px-4 pt-[10vh]"
+      className="fixed inset-0 z-50 flex items-start justify-center bg-slate-900/40 dark:bg-black/60 px-4 pt-[10vh]"
       onMouseDown={(e) => {
         // Clicking the dark backdrop (not the panel) closes the search.
         if (e.target === e.currentTarget) onClose();
@@ -71,10 +71,10 @@ export default function SearchDialog({ onClose }) {
         role="dialog"
         aria-modal="true"
         aria-label="Search courses"
-        className="w-full max-w-xl overflow-hidden rounded-xl border border-slate-200 bg-white shadow-2xl"
+        className="w-full max-w-xl overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl"
       >
-        <div className="flex items-center gap-3 border-b border-slate-200 px-4">
-          <Search className="size-5 shrink-0 text-slate-400" />
+        <div className="flex items-center gap-3 border-b border-slate-200 dark:border-slate-800 px-4">
+          <Search className="size-5 shrink-0 text-slate-400 dark:text-slate-500" />
           <input
             ref={inputRef}
             type="text"
@@ -85,24 +85,24 @@ export default function SearchDialog({ onClose }) {
             aria-label="Search"
             aria-controls="search-results"
             aria-activedescendant={results[active] ? `search-result-${active}` : undefined}
-            className="h-14 min-w-0 flex-1 bg-transparent text-base text-slate-900 outline-none placeholder:text-slate-400"
+            className="h-14 min-w-0 flex-1 bg-transparent text-base text-slate-900 dark:text-slate-100 outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
           <button
             type="button"
             onClick={onClose}
             aria-label="Close search"
-            className="rounded-md p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-700"
+            className="rounded-md p-1.5 text-slate-400 dark:text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-slate-200"
           >
             <X className="size-4" />
           </button>
         </div>
 
         {query.trim() === "" ? (
-          <p className="px-4 py-6 text-sm text-slate-500">
+          <p className="px-4 py-6 text-sm text-slate-500 dark:text-slate-400">
             Try "flexbox", "closures", "joins", or "gradient descent".
           </p>
         ) : results.length === 0 ? (
-          <p className="px-4 py-6 text-sm text-slate-500">
+          <p className="px-4 py-6 text-sm text-slate-500 dark:text-slate-400">
             No matches for "{query.trim()}". Try a shorter or different word.
           </p>
         ) : (
@@ -118,22 +118,22 @@ export default function SearchDialog({ onClose }) {
                   onMouseMove={() => setActive(index)}
                   onClick={() => open(result)}
                   className={`flex cursor-pointer items-center gap-3 rounded-md px-3 py-2.5 ${
-                    index === active ? "bg-blue-50" : ""
+                    index === active ? "bg-blue-50 dark:bg-blue-950/50" : ""
                   }`}
                 >
-                  <Icon className={`size-4 shrink-0 ${index === active ? "text-blue-600" : "text-slate-400"}`} />
+                  <Icon className={`size-4 shrink-0 ${index === active ? "text-blue-600 dark:text-blue-400" : "text-slate-400 dark:text-slate-500"}`} />
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-medium text-slate-900">{result.title}</p>
-                    <p className="truncate text-xs text-slate-500">{result.subtitle}</p>
+                    <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{result.title}</p>
+                    <p className="truncate text-xs text-slate-500 dark:text-slate-400">{result.subtitle}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-slate-400">{typeLabels[result.type]}</span>
+                  <span className="shrink-0 text-xs text-slate-400 dark:text-slate-500">{typeLabels[result.type]}</span>
                 </li>
               );
             })}
           </ul>
         )}
 
-        <div className="hidden items-center gap-4 border-t border-slate-200 px-4 py-2 text-xs text-slate-400 sm:flex">
+        <div className="hidden items-center gap-4 border-t border-slate-200 dark:border-slate-800 px-4 py-2 text-xs text-slate-400 dark:text-slate-500 sm:flex">
           <span>↑ ↓ to move</span>
           <span>Enter to open</span>
           <span>Esc to close</span>

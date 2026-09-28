@@ -62,7 +62,7 @@ export default function SignupPage() {
       footer={
         <>
           Already have an account?{" "}
-          <Link to="/login" state={{ from: redirectTo }} className="font-medium text-blue-600 hover:underline">
+          <Link to="/login" state={{ from: redirectTo }} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
             Log in
           </Link>
         </>

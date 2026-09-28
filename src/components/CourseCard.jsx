@@ -15,7 +15,7 @@ export default function CourseCard({ course }) {
   const { slug, tag, title, description, color, image, lessons, quizzes } = course;
 
   return (
-    <Card className="overflow-hidden pt-0 ring-1 ring-slate-300 transition-shadow hover:border-slate-300 hover:shadow-md">
+    <Card className="overflow-hidden pt-0 ring-1 ring-slate-300 dark:ring-slate-700 transition-shadow hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md">
       {image ? (
         <img src={image} alt="" className="h-40 w-full object-cover" />
       ) : (
@@ -32,7 +32,7 @@ export default function CourseCard({ course }) {
         <CardDescription>{description}</CardDescription>
       </CardHeader>
 
-      <CardContent className="text-sm text-slate-500">
+      <CardContent className="text-sm text-slate-500 dark:text-slate-400">
         {lessons.length > 0
           ? `${lessons.length} lessons, ${
               quizzes.length === 0 ? "no quizzes yet" : `${quizzes.length} ${quizzes.length === 1 ? "quiz" : "quizzes"}`

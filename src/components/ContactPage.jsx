@@ -13,9 +13,9 @@ const MESSAGES_KEY = "coursework-messages";
 const topics = ["A question about a course", "A problem with a quiz", "My account", "Something else"];
 
 const controlClass =
-  "mt-1.5 w-full rounded-md border bg-white px-3 py-2.5 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:ring-2";
-const controlIdle = "border-slate-300 focus:border-blue-500 focus:ring-blue-100";
-const controlError = "border-red-400 focus:border-red-500 focus:ring-red-100";
+  "mt-1.5 w-full rounded-md border bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 outline-none transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2";
+const controlIdle = "border-slate-300 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900";
+const controlError = "border-red-400 focus:border-red-500 focus:ring-red-100 dark:focus:ring-red-900";
 
 function saveMessage(message) {
   let saved;
@@ -67,26 +67,26 @@ export default function ContactPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header />
 
       <main className="mx-auto max-w-xl px-6 py-12">
-        <h1 className="text-4xl font-semibold text-slate-900">Contact us</h1>
-        <p className="mt-3 text-lg text-slate-600">
+        <h1 className="text-4xl font-semibold text-slate-900 dark:text-slate-100">Contact us</h1>
+        <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
           Questions about a course, a quiz that seems wrong, or trouble with your account? Tell us
           about it. For quick answers, check the{" "}
-          <Link to="/help" className="font-medium text-blue-600 hover:underline">
+          <Link to="/help" className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
             Help page
           </Link>{" "}
           first.
         </p>
 
-        <div className="mt-8 rounded-xl border border-slate-200 bg-white p-8 shadow-sm">
+        <div className="mt-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm">
           {sentTo ? (
             <div role="status">
-              <CircleCheck className="size-8 text-green-600" />
-              <h2 className="mt-4 text-xl font-semibold text-slate-900">Message received</h2>
-              <p className="mt-1 text-slate-600">
+              <CircleCheck className="size-8 text-green-600 dark:text-green-400" />
+              <h2 className="mt-4 text-xl font-semibold text-slate-900 dark:text-slate-100">Message received</h2>
+              <p className="mt-1 text-slate-600 dark:text-slate-400">
                 Thanks for getting in touch. We'll reply to {sentTo}.
               </p>
               <div className="mt-6 flex flex-wrap gap-3">
@@ -104,7 +104,7 @@ export default function ContactPage() {
               <Field id="email" label="Email" type="email" value={form.email} onChange={update("email")} error={errors.email} autoComplete="email" />
 
               <div>
-                <label htmlFor="topic" className="block text-sm font-medium text-slate-800">
+                <label htmlFor="topic" className="block text-sm font-medium text-slate-800 dark:text-slate-200">
                   What's it about?
                 </label>
                 <select
@@ -120,7 +120,7 @@ export default function ContactPage() {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-slate-800">
+                <label htmlFor="message" className="block text-sm font-medium text-slate-800 dark:text-slate-200">
                   Message
                 </label>
                 <textarea
@@ -134,7 +134,7 @@ export default function ContactPage() {
                   className={`${controlClass} ${errors.message ? controlError : controlIdle}`}
                 />
                 {errors.message && (
-                  <p id="message-error" className="mt-1.5 text-sm text-red-600">{errors.message}</p>
+                  <p id="message-error" className="mt-1.5 text-sm text-red-600 dark:text-red-400">{errors.message}</p>
                 )}
               </div>
 
