@@ -85,11 +85,12 @@ export default function CoursePage() {
                 <div className="border-t border-slate-200 dark:border-slate-800 px-4 pb-4 pt-3">
                   {lesson.video && (
                     // preload="metadata" loads only the length and first frame until Play is pressed.
+                    // Always a 16:9 frame; videos of other shapes fit inside with black bars.
                     <video
                       src={lesson.video}
                       controls
                       preload="metadata"
-                      className="mb-4 w-full rounded-md bg-black"
+                      className="mb-4 aspect-video w-full rounded-md bg-black object-contain"
                     >
                       Your browser can't play this video.
                     </video>
