@@ -17,6 +17,7 @@ const webDesign = {
     },
     {
       title: "The Document Head and Viewport",
+      video: "/videos/Introduction to Web design/C1L2.mp4",
       body: "Every page has a <head> that holds information about the page rather than content shown on it. The <title> appears in the browser tab, and the viewport meta tag tells phones to use the real screen width instead of zooming out.",
       code: `<!DOCTYPE html>
 <html lang="en">
