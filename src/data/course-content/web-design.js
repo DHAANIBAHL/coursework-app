@@ -36,6 +36,7 @@ const webDesign = {
     },
     {
       title: "Semantic HTML",
+      video: "/videos/Introduction to Web design/C1L3.mp4",
       body: "Semantic elements describe the role of a section, not just that it exists. Tags like <header>, <nav>, <main>, and <footer> tell browsers, screen readers, and search engines how your page is organized.",
       code: `<header>
   <nav>
@@ -56,6 +57,7 @@ const webDesign = {
     },
     {
       title: "Links, Images, and Lists",
+      video: "/videos/Introduction to Web design/C1L4.mp4",
       body: "Links connect pages with the href attribute, images load with src, and lists group related items. Every image needs an alt attribute that describes it for people who can't see it.",
       code: `<a href="https://example.com" target="_blank">Visit Example</a>
 
@@ -70,6 +72,7 @@ const webDesign = {
     },
     {
       title: "Tables",
+      video: "/videos/Introduction to Web design/C1L5.mp4",
       body: "Tables display data in rows and columns. Each row is a <tr>, header cells are <th>, and regular data cells are <td>.",
       code: `<table>
   <caption>Class schedule</caption>
@@ -90,6 +93,7 @@ const webDesign = {
     },
     {
       title: "Forms and Inputs",
+      video: "/videos/Introduction to Web design/C1L6.mp4",
       body: "Forms collect information from visitors. Each input should have a <label> linked to it through matching for and id attributes, so clicking the label focuses the field.",
       code: `<form>
   <label for="email">Email</label>
