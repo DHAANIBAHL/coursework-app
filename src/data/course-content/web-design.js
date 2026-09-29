@@ -8,6 +8,7 @@ const webDesign = {
   lessons: [
     {
       title: "HTML Basics",
+      video: "/videos/Introduction to Web design/C1L1 (Web design).mp4",
       body: "HTML describes what's on a page, not how it looks. Every piece of content sits inside an element — a tag that says what that content is: a heading, a paragraph, a link, a list.",
       code: `<h1>Page title</h1>
 <p>A paragraph of text.</p>
