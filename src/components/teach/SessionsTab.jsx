@@ -115,7 +115,7 @@ export default function SessionsTab({ slug, data, reload }) {
 
 function SessionList({ sessions, onRemove, now, live }) {
   return (
-    <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+    <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
       {sessions.map((s) => {
         const started = new Date(s.startsAt).getTime() <= now;
         return (

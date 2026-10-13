@@ -60,7 +60,7 @@ export default function AssignmentsTab({ slug, data, reload }) {
         {data.assignments.length === 0 ? (
           <EmptyState>No assignments yet.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {data.assignments.map((a) => (
               <li key={a.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
                 <div className="min-w-0 flex-1">

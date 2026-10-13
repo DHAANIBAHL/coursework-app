@@ -7,7 +7,7 @@ export function AuthShell({ title, subtitle, children, footer }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header />
-      <main className="mx-auto flex max-w-md flex-col px-6 py-16">
+      <main className="page-enter mx-auto flex max-w-md flex-col px-6 py-16">
         <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 shadow-sm">
           <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{subtitle}</p>

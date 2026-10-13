@@ -57,7 +57,7 @@ export default function QuizzesTab({ slug, data, reload }) {
         {data.quizzes.length === 0 ? (
           <EmptyState>No quizzes yet. The course's built-in quizzes are always available to students.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {data.quizzes.map((q) => (
               <li key={q.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
                 <div className="min-w-0 flex-1">
@@ -278,7 +278,7 @@ function Results({ quizId, onBack }) {
         {data.students.length === 0 ? (
           <EmptyState>No one has taken this quiz yet.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {data.students.map((s) => (
               <li key={s.id} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
                 <span>
@@ -295,7 +295,7 @@ function Results({ quizId, onBack }) {
       </Section>
 
       <Section title="By question">
-        <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+        <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
           {data.questions.map((q, i) => {
             const fraction = q.answered ? q.correct / q.answered : null;
             return (

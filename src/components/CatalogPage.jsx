@@ -11,7 +11,7 @@ export default function CatalogPage() {
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
       <Header />
 
-      <section className="max-w-6xl mx-auto px-6 py-16">
+      <section className="page-enter max-w-6xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold max-w-xl mb-4">
           {courses.length} courses. {totalLessons} lessons. {totalQuizzes} quizzes.
         </h1>
@@ -21,7 +21,7 @@ export default function CatalogPage() {
         </p>
       </section>
 
-      <section className="max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <section className="page-enter max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-6 [animation-delay:80ms]">
         {courses.map((course) => (
           <CourseCard key={course.slug} course={course} />
         ))}

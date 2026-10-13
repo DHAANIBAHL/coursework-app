@@ -62,7 +62,7 @@ export default function AnnouncementsTab({ slug, data, reload }) {
         {data.announcements.length === 0 ? (
           <EmptyState>No announcements yet.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {data.announcements.map((a) => (
               <li key={a.id} className="flex items-start gap-4 px-5 py-4">
                 <div className="min-w-0 flex-1">

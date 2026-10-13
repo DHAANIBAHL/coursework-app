@@ -73,7 +73,7 @@ export default function LearnDashboard() {
         </div>
 
         <Section title="Continue learning">
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {courses.map((e) => {
               const course = getCourse(e.slug);
               const total = course.lessons.length;
@@ -117,7 +117,7 @@ export default function LearnDashboard() {
             {open.length === 0 ? (
               <EmptyState>Nothing due. You're all caught up.</EmptyState>
             ) : (
-              <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+              <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {open.map((d) => (
                   <DeadlineRow key={`${d.type}-${d.id}`} d={d} />
                 ))}
@@ -128,7 +128,7 @@ export default function LearnDashboard() {
                 <summary className="cursor-pointer px-5 py-3 text-sm text-slate-500 dark:text-slate-400">
                   Recently handed in ({done.length})
                 </summary>
-                <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+                <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                   {done.map((d) => (
                     <DeadlineRow key={`${d.type}-${d.id}`} d={d} />
                   ))}
@@ -141,7 +141,7 @@ export default function LearnDashboard() {
             {sessions.length === 0 ? (
               <EmptyState>No live classes in the next 30 days.</EmptyState>
             ) : (
-              <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+              <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {sessions.map((s) => {
                   const live = new Date(s.startsAt).getTime() <= now;
                   return (
@@ -180,7 +180,7 @@ export default function LearnDashboard() {
             {announcements.length === 0 ? (
               <EmptyState>No announcements yet.</EmptyState>
             ) : (
-              <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+              <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {announcements.map((a) => (
                   <li key={a.id} className="px-5 py-3">
                     <p className="flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -201,7 +201,7 @@ export default function LearnDashboard() {
             {recentGrades.length === 0 ? (
               <EmptyState>Grades from your teachers will show up here.</EmptyState>
             ) : (
-              <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+              <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {recentGrades.map((g) => (
                   <li key={g.id} className="px-5 py-3">
                     <div className="flex items-center justify-between gap-4">

@@ -132,7 +132,7 @@ function Overview({ slug, course, data }) {
       </Section>
 
       <Section title="Course quizzes">
-        <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+        <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
           {course.quizzes.map((q) => {
             const result = data.builtinQuizResults[q.id];
             return (
@@ -167,7 +167,7 @@ function Materials({ data }) {
   }
   return (
     <Section>
-      <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+      <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
         {data.materials.map((m) => {
           const Icon = kindIcons[m.kind];
           return (
@@ -267,7 +267,7 @@ function Quizzes({ slug, course, data }) {
         {data.quizzes.length === 0 ? (
           <EmptyState>No class quizzes yet.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {data.quizzes.map((q) => {
               const status = q.myResult ? "graded" : q.dueAt && new Date(q.dueAt).getTime() < now ? "overdue" : "todo";
               return (
@@ -317,7 +317,7 @@ function Live({ data }) {
         {upcoming.length === 0 ? (
           <EmptyState>No live classes scheduled.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {upcoming.map((s) => {
               const live = new Date(s.startsAt).getTime() <= now;
               return (
@@ -347,7 +347,7 @@ function Live({ data }) {
       </Section>
       {past.length > 0 && (
         <Section title="Past">
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {past.map((s) => (
               <li key={s.id} className="px-5 py-3 text-sm">
                 <span className="font-medium text-slate-900 dark:text-slate-100">{s.title}</span>{" "}
