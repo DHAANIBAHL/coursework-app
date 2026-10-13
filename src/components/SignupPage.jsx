@@ -3,12 +3,14 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AuthShell, Field, FormError, emailPattern } from "@/components/AuthForm";
 import { useAuth } from "@/context/AuthContext";
+import { homePathFor } from "@/lib/roles";
 
 export default function SignupPage() {
   const { user, loading, signup } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from || "/courses";
+  // Where they were headed before being asked to log in, if anywhere.
+  const redirectTo = location.state?.from;
 
   const [form, setForm] = useState({
     name: "",
@@ -22,7 +24,7 @@ export default function SignupPage() {
   const [submitting, setSubmitting] = useState(false);
 
   if (loading) return null;
-  if (user && !submitting) return <Navigate to={redirectTo} replace />;
+  if (user && !submitting) return <Navigate to={redirectTo || homePathFor(user.role)} replace />;
 
   // Returns a function that updates one field of the form.
   const update = (field) => (value) => setForm((f) => ({ ...f, [field]: value }));
@@ -47,8 +49,8 @@ export default function SignupPage() {
 
     setSubmitting(true);
     try {
-      await signup(form);
-      navigate(redirectTo, { replace: true });
+      const account = await signup(form);
+      navigate(redirectTo || homePathFor(account.role), { replace: true });
     } catch (err) {
       setFormError(err.message);
       setSubmitting(false);

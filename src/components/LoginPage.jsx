@@ -3,12 +3,14 @@ import { Link, Navigate, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AuthShell, Field, FormError, emailPattern } from "@/components/AuthForm";
 import { useAuth } from "@/context/AuthContext";
+import { homePathFor } from "@/lib/roles";
 
 export default function LoginPage() {
   const { user, loading, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from || "/courses";
+  // Where they were headed before being asked to log in, if anywhere.
+  const redirectTo = location.state?.from;
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +22,7 @@ export default function LoginPage() {
 
   // Already logged in? Skip this page.
   if (loading) return null;
-  if (user && !submitting) return <Navigate to={redirectTo} replace />;
+  if (user && !submitting) return <Navigate to={redirectTo || homePathFor(user.role)} replace />;
 
   function validate() {
     const next = {};
@@ -40,8 +42,8 @@ export default function LoginPage() {
 
     setSubmitting(true);
     try {
-      await login({ email, password });
-      navigate(redirectTo, { replace: true });
+      const account = await login({ email, password });
+      navigate(redirectTo || homePathFor(account.role), { replace: true });
     } catch (err) {
       if (err.code === "NO_ACCOUNT") setNoAccountFor(email.trim());
       else setFormError(err.message);
