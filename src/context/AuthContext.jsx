@@ -1,29 +1,9 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { api } from "@/lib/api";
 
-// Talks to the Express server in the coursework-server folder.
-// Vite forwards every /api request to it (see vite.config.js).
-async function request(path, { method = "GET", body } = {}) {
-  let response;
-  try {
-    response = await fetch(`/api/auth${path}`, {
-      method,
-      headers: body ? { "Content-Type": "application/json" } : undefined,
-      body: body ? JSON.stringify(body) : undefined,
-    });
-  } catch {
-    throw new Error("Can't reach the server. Make sure the backend is running.");
-  }
-
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) {
-    const error = new Error(
-      data.error || "Can't reach the server. Make sure the backend is running."
-    );
-    // e.g. "NO_ACCOUNT" or "WRONG_PASSWORD", so pages can react to specific cases
-    error.code = data.code;
-    throw error;
-  }
-  return data;
+// Every auth call goes to /api/auth on the server (see src/lib/api.js).
+function request(path, options) {
+  return api(`/auth${path}`, options);
 }
 
 const AuthContext = createContext(null);

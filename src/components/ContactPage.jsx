@@ -3,29 +3,17 @@ import { Link } from "react-router-dom";
 import { CircleCheck } from "lucide-react";
 import Header from "@/components/Header";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { Field, emailPattern } from "@/components/AuthForm";
+import { Field, FormError, emailPattern } from "@/components/AuthForm";
 import { useAuth } from "@/context/AuthContext";
+import { api } from "@/lib/api";
 
-// TEMPORARY STORAGE: messages are saved in this browser's localStorage.
-// When the backend is ready, send them to the server with fetch() instead.
-const MESSAGES_KEY = "coursework-messages";
-
+// Messages go to the server (POST /api/contact); admins read them under Admin → Messages.
 const topics = ["A question about a course", "A problem with a quiz", "My account", "Something else"];
 
 const controlClass =
   "mt-1.5 w-full rounded-md border bg-white dark:bg-slate-900 px-3 py-2.5 text-sm text-slate-900 dark:text-slate-100 outline-none transition-colors placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2";
 const controlIdle = "border-slate-300 dark:border-slate-700 focus:border-blue-500 focus:ring-blue-100 dark:focus:ring-blue-900";
 const controlError = "border-red-400 focus:border-red-500 focus:ring-red-100 dark:focus:ring-red-900";
-
-function saveMessage(message) {
-  let saved;
-  try {
-    saved = JSON.parse(localStorage.getItem(MESSAGES_KEY)) || [];
-  } catch {
-    saved = [];
-  }
-  localStorage.setItem(MESSAGES_KEY, JSON.stringify([...saved, message]));
-}
 
 export default function ContactPage() {
   const { user } = useAuth();
@@ -34,6 +22,8 @@ export default function ContactPage() {
   const [form, setForm] = useState(blankForm);
   const [errors, setErrors] = useState({});
   const [sentTo, setSentTo] = useState(null);
+  const [formError, setFormError] = useState("");
+  const [sending, setSending] = useState(false);
 
   // Returns a function that updates one field of the form.
   const update = (field) => (value) => setForm((f) => ({ ...f, [field]: value }));
@@ -47,23 +37,27 @@ export default function ContactPage() {
     return next;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     const found = validate();
     setErrors(found);
+    setFormError("");
     if (Object.keys(found).length > 0) return;
 
-    saveMessage({
-      id: crypto.randomUUID(),
-      name: form.name.trim(),
-      email: form.email.trim().toLowerCase(),
-      topic: form.topic,
-      message: form.message.trim(),
-      sentAt: new Date().toISOString(),
-    });
-    setSentTo(form.email.trim());
-    setForm(blankForm);
-    setErrors({});
+    setSending(true);
+    try {
+      await api("/contact", {
+        method: "POST",
+        body: { name: form.name.trim(), email: form.email.trim(), topic: form.topic, message: form.message.trim() },
+      });
+      setSentTo(form.email.trim());
+      setForm(blankForm);
+      setErrors({});
+    } catch (err) {
+      setFormError(err.message);
+    } finally {
+      setSending(false);
+    }
   }
 
   return (
@@ -100,6 +94,7 @@ export default function ContactPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} noValidate className="space-y-5">
+              <FormError message={formError} />
               <Field id="name" label="Name" value={form.name} onChange={update("name")} error={errors.name} autoComplete="name" />
               <Field id="email" label="Email" type="email" value={form.email} onChange={update("email")} error={errors.email} autoComplete="email" />
 
@@ -138,8 +133,8 @@ export default function ContactPage() {
                 )}
               </div>
 
-              <Button type="submit" className="h-10 w-full">
-                Send message
+              <Button type="submit" className="h-10 w-full" disabled={sending}>
+                {sending ? "Sending…" : "Send message"}
               </Button>
             </form>
           )}
