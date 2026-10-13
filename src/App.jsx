@@ -9,6 +9,9 @@ import AdminMessages from "@/components/admin/AdminMessages";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminUsers from "@/components/admin/AdminUsers";
 import { PanelLayout } from "@/components/panel/Panel";
+import TeachCourse from "@/components/teach/TeachCourse";
+import TeachDashboard from "@/components/teach/TeachDashboard";
+import TeachLayout from "@/components/teach/TeachLayout";
 import ContactPage from "@/components/ContactPage";
 import HelpPage from "@/components/HelpPage";
 import LandingPage from "@/components/LandingPage";
@@ -135,6 +138,17 @@ export default function App() {
           <Route path="users" element={<AdminUsers />} />
           <Route path="messages" element={<AdminMessages />} />
           <Route path="content" element={<AdminContent />} />
+        </Route>
+        <Route
+          path="/teach"
+          element={
+            <RequireAuth roles={["teacher", "admin"]}>
+              <TeachLayout />
+            </RequireAuth>
+          }
+        >
+          <Route index element={<TeachDashboard />} />
+          <Route path="courses/:slug" element={<TeachCourse />} />
         </Route>
         <Route path="/help" element={<HelpPage />} />
         <Route path="/contact" element={<ContactPage />} />
