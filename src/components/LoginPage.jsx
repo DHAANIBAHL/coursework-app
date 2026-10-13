@@ -8,7 +8,7 @@ export default function LoginPage() {
   const { user, loading, login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from || "/";
+  const redirectTo = location.state?.from || "/courses";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

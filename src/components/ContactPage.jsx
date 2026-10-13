@@ -93,7 +93,7 @@ export default function ContactPage() {
                 <Button variant="outline" onClick={() => setSentTo(null)}>
                   Send another message
                 </Button>
-                <Link to="/" className={buttonVariants()}>
+                <Link to="/courses" className={buttonVariants()}>
                   Back to courses
                 </Link>
               </div>
