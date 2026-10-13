@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import { buttonVariants } from "@/components/ui/button";
 
 // Answers describe how the app works today. Update them when that changes
-// (saved quiz scores, password reset).
+// (e.g. self-service password reset).
 const sections = [
   {
     title: "Getting started",
@@ -36,7 +36,7 @@ const sections = [
       },
       {
         q: "Is my quiz score saved?",
-        a: "Not yet. Your score shows when you finish a quiz but isn't kept after you leave the page. Saved progress is planned for the My learning page.",
+        a: "Yes, once you've joined the course. Press Join course on the course page, and your quiz scores and finished lessons are saved to My learning. Without joining, you still see your score, but it isn't kept.",
       },
       {
         q: "Can I retake a quiz?",

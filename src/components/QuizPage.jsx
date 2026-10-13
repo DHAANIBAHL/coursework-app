@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, CircleCheck, CircleX } from "lucide-react";
 import Header from "@/components/Header";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { getCourse, getQuiz } from "@/data/courses";
+import { api } from "@/lib/api";
 
 export default function QuizPage() {
   // Reads both parts of the URL, e.g. /course/web-design/quiz/html-foundations
@@ -36,6 +37,8 @@ function Quiz({ course, quiz }) {
   // Chosen option id for each question, e.g. { q1: "b", q2: "c" }
   const [answers, setAnswers] = useState({});
   const [submitted, setSubmitted] = useState(false);
+  // "saved" | "not-enrolled" | "error" once the score has been sent to the server.
+  const [saveState, setSaveState] = useState(null);
 
   const { slug, title, quizzes } = course;
   const { questions } = quiz;
@@ -48,15 +51,27 @@ function Quiz({ course, quiz }) {
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }));
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     setSubmitted(true);
+    setSaveState(null);
     window.scrollTo(0, 0);
+    // Save the score to the student's progress (only works once they've joined the course).
+    try {
+      await api(`/learn/courses/${slug}/builtin-quizzes/${quiz.id}/attempts`, {
+        method: "POST",
+        body: { score, total: questions.length },
+      });
+      setSaveState("saved");
+    } catch (err) {
+      setSaveState(err.code === "NOT_ENROLLED" ? "not-enrolled" : "error");
+    }
   }
 
   function retake() {
     setAnswers({});
     setSubmitted(false);
+    setSaveState(null);
     window.scrollTo(0, 0);
   }
 
@@ -92,6 +107,20 @@ function Quiz({ course, quiz }) {
                 ? "Perfect. You've got this section down."
                 : "Review the explanations below, then give it another go."}
             </p>
+            {saveState === "saved" && (
+              <p className="mt-2 text-sm text-green-700 dark:text-green-300">Saved to your progress.</p>
+            )}
+            {saveState === "not-enrolled" && (
+              <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+                <Link to={`/course/${slug}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                  Join this course
+                </Link>{" "}
+                to save your quiz scores and track your progress.
+              </p>
+            )}
+            {saveState === "error" && (
+              <p className="mt-2 text-sm text-red-600 dark:text-red-400">Your score couldn't be saved this time.</p>
+            )}
             <div className="mt-4 flex flex-wrap gap-3">
               <Button variant={nextQuiz ? "outline" : "default"} onClick={retake}>
                 Retake this quiz
