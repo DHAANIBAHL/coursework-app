@@ -1,16 +1,14 @@
 import { BookOpen, LayoutDashboard } from "lucide-react";
 import { PanelLayout } from "@/components/panel/Panel";
-import { useAuth } from "@/context/AuthContext";
 import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
 import { teachingCourses } from "@/lib/teaching";
 
-// The /teach area: a dashboard plus one sidebar entry per course the teacher
-// teaches (every course, for admins).
+// The /teach area: a dashboard plus one sidebar entry per course with a
+// teacher assigned (see teachingCourses).
 export default function TeachLayout() {
-  const { user } = useAuth();
   const overview = useApi("/teach/overview");
-  const courses = teachingCourses(user, overview.data?.courses);
+  const courses = teachingCourses(overview.data?.courses);
 
   const items = [
     { to: "/teach", label: "Dashboard", icon: LayoutDashboard, end: true },
@@ -21,5 +19,5 @@ export default function TeachLayout() {
     })),
   ];
 
-  return <PanelLayout title={user?.role === "admin" ? "Teaching (all courses)" : "Teaching"} items={items} />;
+  return <PanelLayout title="Teaching" items={items} />;
 }

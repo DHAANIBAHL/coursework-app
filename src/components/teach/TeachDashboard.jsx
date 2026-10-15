@@ -28,14 +28,14 @@ export default function TeachDashboard() {
   if (error) return <ErrorNote error={error} onRetry={reload} />;
 
   const { totals, upcomingSessions, recentSubmissions, dueSoon } = data;
-  const courses = teachingCourses(user, data.courses);
+  const courses = teachingCourses(data.courses);
 
   return (
     <>
       <PageHeading title="Teaching dashboard" description="Your classes at a glance: who's learning, what needs grading, and what's coming up." />
 
       {courses.length === 0 ? (
-        <NotAssignedYet />
+        <NotAssignedYet isAdmin={user.role === "admin"} />
       ) : (
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -45,7 +45,7 @@ export default function TeachDashboard() {
             <StatCard label="Materials" value={totals.materials} icon={FolderOpen} hint="files, videos, and links" />
           </div>
 
-          <Section title={user.role === "admin" ? "All courses" : "Your courses"}>
+          <Section title={user.role === "admin" ? "Courses with a teacher" : "Your courses"}>
             <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
               {courses.map((c) => {
                 const course = getCourse(c.slug);
@@ -153,7 +153,7 @@ export default function TeachDashboard() {
 
 // Shown to a teacher who hasn't been given a course yet: what they'll be able
 // to do, and how to get started.
-function NotAssignedYet() {
+function NotAssignedYet({ isAdmin }) {
   const tools = [
     [Upload, "Upload material", "Share files, slides, and lesson videos, or post links."],
     [Megaphone, "Post announcements", "News that shows up on your students' dashboards."],
@@ -165,11 +165,23 @@ function NotAssignedYet() {
   return (
     <Section>
       <div className="p-6">
-        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">You haven't been given a course yet</p>
-        <p className="mt-1 text-slate-600 dark:text-slate-400">
-          Once an admin assigns you a course, it appears in the sidebar with everything below. Ask an admin to add you under{" "}
-          <span className="font-medium text-slate-900 dark:text-slate-100">Admin → Content → Teachers</span>.
+        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">
+          {isAdmin ? "No course has a teacher yet" : "You haven't been given a course yet"}
         </p>
+        {isAdmin ? (
+          <p className="mt-1 text-slate-600 dark:text-slate-400">
+            Courses appear here once they have a teacher, with everything below.{" "}
+            <Link to="/admin/content" className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+              Assign a teacher under Admin → Content
+            </Link>
+            .
+          </p>
+        ) : (
+          <p className="mt-1 text-slate-600 dark:text-slate-400">
+            Once an admin assigns you a course, it appears in the sidebar with everything below. Ask an admin to add you under{" "}
+            <span className="font-medium text-slate-900 dark:text-slate-100">Admin → Content → Teachers</span>.
+          </p>
+        )}
         <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map(([Icon, title, text]) => (
             <li key={title} className="rounded-lg border border-slate-200 dark:border-slate-800 p-4">
