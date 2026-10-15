@@ -1,31 +1,41 @@
 import { Link } from "react-router-dom";
-import { BarChart3, ClipboardCheck, FolderOpen, Users, Video } from "lucide-react";
+import {
+  BarChart3,
+  ClipboardCheck,
+  FolderOpen,
+  ListChecks,
+  Megaphone,
+  Presentation,
+  Upload,
+  Users,
+  Video,
+} from "lucide-react";
 import { EmptyState, ErrorNote, Loading, PageHeading, Section, StatCard } from "@/components/panel/Panel";
 import { getCourse } from "@/data/courses";
+import { useAuth } from "@/context/AuthContext";
 import { useApi } from "@/lib/api";
+import { teachingCourses } from "@/lib/teaching";
 import { formatDate, percent, relativeTime } from "@/lib/format";
 
 const linkClass = "text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline";
 
 export default function TeachDashboard() {
+  const { user } = useAuth();
   // Loaded fresh each visit, so numbers reflect grading done in a course page.
   const { data, error, loading, reload } = useApi("/teach/overview");
 
   if (loading && !data) return <Loading />;
   if (error) return <ErrorNote error={error} onRetry={reload} />;
 
-  const { totals, courses, upcomingSessions, recentSubmissions, dueSoon } = data;
+  const { totals, upcomingSessions, recentSubmissions, dueSoon } = data;
+  const courses = teachingCourses(user, data.courses);
 
   return (
     <>
       <PageHeading title="Teaching dashboard" description="Your classes at a glance: who's learning, what needs grading, and what's coming up." />
 
       {courses.length === 0 ? (
-        <Section>
-          <EmptyState>
-            You aren't teaching any courses yet. An admin can assign you to a course from Admin → Content.
-          </EmptyState>
-        </Section>
+        <NotAssignedYet />
       ) : (
         <div className="space-y-6">
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -35,7 +45,7 @@ export default function TeachDashboard() {
             <StatCard label="Materials" value={totals.materials} icon={FolderOpen} hint="files, videos, and links" />
           </div>
 
-          <Section title="Your courses">
+          <Section title={user.role === "admin" ? "All courses" : "Your courses"}>
             <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
               {courses.map((c) => {
                 const course = getCourse(c.slug);
@@ -138,5 +148,40 @@ export default function TeachDashboard() {
         </div>
       )}
     </>
+  );
+}
+
+// Shown to a teacher who hasn't been given a course yet: what they'll be able
+// to do, and how to get started.
+function NotAssignedYet() {
+  const tools = [
+    [Upload, "Upload material", "Share files, slides, and lesson videos, or post links."],
+    [Megaphone, "Post announcements", "News that shows up on your students' dashboards."],
+    [ClipboardCheck, "Set and grade assignments", "Deadlines, hand-ins, points, and feedback."],
+    [ListChecks, "Write quizzes", "Multiple-choice quizzes graded automatically, with per-question results."],
+    [Presentation, "Run live classes", "Schedule sessions with a Zoom, Meet, Teams, or free Jitsi link."],
+    [Users, "Follow your students", "Lesson progress, quiz averages, and submissions for each student."],
+  ];
+  return (
+    <Section>
+      <div className="p-6">
+        <p className="text-lg font-semibold text-slate-900 dark:text-slate-100">You haven't been given a course yet</p>
+        <p className="mt-1 text-slate-600 dark:text-slate-400">
+          Once an admin assigns you a course, it appears in the sidebar with everything below. Ask an admin to add you under{" "}
+          <span className="font-medium text-slate-900 dark:text-slate-100">Admin → Content → Teachers</span>.
+        </p>
+        <ul className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tools.map(([Icon, title, text]) => (
+            <li key={title} className="rounded-lg border border-slate-200 dark:border-slate-800 p-4">
+              <span className="flex size-9 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
+                <Icon className="size-4" />
+              </span>
+              <p className="mt-3 text-sm font-medium text-slate-900 dark:text-slate-100">{title}</p>
+              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{text}</p>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </Section>
   );
 }
