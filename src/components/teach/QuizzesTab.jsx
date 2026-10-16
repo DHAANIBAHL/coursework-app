@@ -5,11 +5,15 @@ import { FormError } from "@/components/AuthForm";
 import { EmptyState, ErrorNote, Loading, Section } from "@/components/panel/Panel";
 import { DateTimeInput, TextArea, TextInput } from "@/components/panel/Form";
 import { api, useApi } from "@/lib/api";
-import { formatDate, fromLocalInput, percent, toLocalInput } from "@/lib/format";
+import { formatDate, fromLocalInput, percent, plural, toLocalInput } from "@/lib/format";
 
-// Teacher-written quizzes: build, publish, and see results. Students' answers
-// are graded on the server.
-export default function QuizzesTab({ slug, data, reload }) {
+// Teacher-written quizzes and tests: build, publish, and see results.
+// kind="quiz": quick practice checks. kind="test": timed, limited attempts.
+// Students' answers are graded on the server.
+export default function QuizzesTab({ slug, data, reload, kind = "quiz" }) {
+  const isTest = kind === "test";
+  const noun = isTest ? "test" : "quiz";
+  const items = data.quizzes.filter((q) => (q.kind ?? "quiz") === kind);
   const [editing, setEditing] = useState(null); // null, "new", or a quiz
   const [resultsFor, setResultsFor] = useState(null);
   const [actionError, setActionError] = useState(null);
@@ -36,6 +40,7 @@ export default function QuizzesTab({ slug, data, reload }) {
   if (editing) {
     return (
       <QuizBuilder
+        kind={kind}
         slug={slug}
         quiz={editing === "new" ? null : editing}
         onDone={() => {
@@ -50,15 +55,19 @@ export default function QuizzesTab({ slug, data, reload }) {
   return (
     <div className="space-y-6">
       <Button onClick={() => setEditing("new")}>
-        <Plus className="size-4" /> New quiz
+        <Plus className="size-4" /> New {noun}
       </Button>
       <ErrorNote error={actionError} />
-      <Section title="Your quizzes">
-        {data.quizzes.length === 0 ? (
-          <EmptyState>No quizzes yet. The course's built-in quizzes are always available to students.</EmptyState>
+      <Section title={isTest ? "Your tests" : "Your quizzes"}>
+        {items.length === 0 ? (
+          <EmptyState>
+            {isTest
+              ? "No tests yet. Tests are timed, and students get a limited number of attempts."
+              : "No quizzes yet. The course's built-in quizzes are always available to students."}
+          </EmptyState>
         ) : (
           <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
-            {data.quizzes.map((q) => (
+            {items.map((q) => (
               <li key={q.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
                 <div className="min-w-0 flex-1">
                   <p className="font-medium text-slate-900 dark:text-slate-100">
@@ -74,8 +83,11 @@ export default function QuizzesTab({ slug, data, reload }) {
                     </span>
                   </p>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {q.questionCount} questions{q.dueAt && ` · due ${formatDate(q.dueAt, true)}`} · {q.attempts} attempt
-                    {q.attempts === 1 ? "" : "s"} · average {percent(q.averageScore)}
+                    {plural(q.questionCount, "question")}
+                    {q.timeLimitMin && ` · ${q.timeLimitMin} min`}
+                    {` · ${q.maxAttempts ? `${q.maxAttempts} attempt${q.maxAttempts === 1 ? "" : "s"} each` : "unlimited attempts"}`}
+                    {q.dueAt && ` · due ${formatDate(q.dueAt, true)}`} · {q.attempts} taken
+                    {" "}· average {percent(q.averageScore)}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -104,10 +116,14 @@ export default function QuizzesTab({ slug, data, reload }) {
 
 const emptyQuestion = () => ({ prompt: "", options: ["", ""], correctIndex: 0, explanation: "" });
 
-function QuizBuilder({ slug, quiz, onDone, onCancel }) {
+function QuizBuilder({ kind, slug, quiz, onDone, onCancel }) {
+  const isTest = kind === "test";
   const [title, setTitle] = useState(quiz?.title ?? "");
   const [description, setDescription] = useState(quiz?.description ?? "");
   const [dueAt, setDueAt] = useState(toLocalInput(quiz?.dueAt));
+  const [timeLimitMin, setTimeLimitMin] = useState(String(quiz?.timeLimitMin ?? 30));
+  // Blank means unlimited (quizzes only); tests default to a single attempt.
+  const [maxAttempts, setMaxAttempts] = useState(String(quiz?.maxAttempts ?? (isTest ? 1 : "")));
   const [questions, setQuestions] = useState(
     quiz
       ? quiz.questions.map((q) => ({
@@ -132,7 +148,16 @@ function QuizBuilder({ slug, quiz, onDone, onCancel }) {
       }
     }
     setSaving(true);
-    const body = { title, description, dueAt: fromLocalInput(dueAt), questions, published };
+    const body = {
+      kind,
+      title,
+      description,
+      dueAt: fromLocalInput(dueAt),
+      questions,
+      published,
+      timeLimitMin: isTest ? Number(timeLimitMin) : null,
+      maxAttempts: maxAttempts === "" ? null : Number(maxAttempts),
+    };
     try {
       if (quiz) await api(`/teach/quizzes/${quiz.id}`, { method: "PATCH", body });
       else await api(`/teach/courses/${slug}/quizzes`, { method: "POST", body });
@@ -145,7 +170,7 @@ function QuizBuilder({ slug, quiz, onDone, onCancel }) {
 
   return (
     <Section
-      title={quiz ? "Edit quiz" : "New quiz"}
+      title={`${quiz ? "Edit" : "New"} ${isTest ? "test" : "quiz"}`}
       action={
         <button type="button" onClick={onCancel} aria-label="Close" className="rounded-md p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
           <X className="size-4" />
@@ -160,8 +185,31 @@ function QuizBuilder({ slug, quiz, onDone, onCancel }) {
           </p>
         )}
         <div className="grid gap-4 sm:grid-cols-2">
-          <TextInput id="q-title" label="Title" value={title} onChange={setTitle} placeholder="e.g. Week 2 check-in" />
+          <TextInput id="q-title" label="Title" value={title} onChange={setTitle} placeholder={isTest ? "e.g. Midterm test" : "e.g. Week 2 check-in"} />
           <DateTimeInput id="q-due" label="Due (optional)" value={dueAt} onChange={setDueAt} hint="Shows on students' deadlines." />
+          {isTest && (
+            <TextInput
+              id="q-time"
+              label="Time limit (minutes)"
+              type="number"
+              min={1}
+              max={600}
+              value={timeLimitMin}
+              onChange={setTimeLimitMin}
+              hint="The clock starts when a student presses Start, and answers are submitted automatically when it runs out."
+            />
+          )}
+          <TextInput
+            id="q-attempts"
+            label="Attempts allowed"
+            type="number"
+            min={1}
+            max={50}
+            value={maxAttempts}
+            onChange={setMaxAttempts}
+            placeholder="Unlimited"
+            hint={isTest ? "Usually 1 for a test." : "Leave empty for unlimited practice."}
+          />
         </div>
         <TextArea id="q-desc" label="Description (optional)" rows={2} value={description} onChange={setDescription} />
 

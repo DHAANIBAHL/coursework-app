@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { CalendarPlus, Sparkles, Trash2, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GoLive from "@/components/teach/GoLive";
 import { FormError } from "@/components/AuthForm";
 import { EmptyState, ErrorNote, Section } from "@/components/panel/Panel";
 import { DateTimeInput, TextArea, TextInput } from "@/components/panel/Form";
@@ -63,7 +64,9 @@ export default function SessionsTab({ slug, data, reload }) {
 
   return (
     <div className="space-y-6">
-      <Section title="Schedule a live class">
+      <GoLive slug={slug} sessions={data.sessions} reload={reload} />
+
+      <Section title="Schedule a live class for later">
         <form onSubmit={handleSubmit} noValidate className="space-y-4 p-5">
           <FormError message={formError} />
           <div className="grid gap-4 sm:grid-cols-2">

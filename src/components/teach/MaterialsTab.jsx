@@ -9,8 +9,11 @@ import { fileSize, formatDate } from "@/lib/format";
 
 const kindIcons = { file: FileText, video: Video, link: Link2 };
 
-// Upload documents and videos, or share links, for this course's students.
-export default function MaterialsTab({ slug, data, reload }) {
+// kind="video": pre-recorded lecture videos (upload only, shown as players).
+// kind="material": documents, slides, and links (everything except videos).
+export default function MaterialsTab({ slug, data, reload, kind = "material" }) {
+  const isVideo = kind === "video";
+  const items = data.materials.filter((m) => (m.kind === "video") === isVideo);
   const [mode, setMode] = useState("file");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -25,7 +28,8 @@ export default function MaterialsTab({ slug, data, reload }) {
     e.preventDefault();
     setFormError("");
     if (!title.trim()) return setFormError("Give the material a title.");
-    if (mode === "file" && !file) return setFormError("Choose a file to upload.");
+    if (mode === "file" && !file) return setFormError(isVideo ? "Choose a video to upload." : "Choose a file to upload.");
+    if (isVideo && !file.type.startsWith("video/")) return setFormError("That isn't a video file. Use MP4 or WebM.");
     if (mode === "link" && !url.trim()) return setFormError("Paste the link.");
 
     const form = new FormData();
@@ -63,12 +67,13 @@ export default function MaterialsTab({ slug, data, reload }) {
 
   return (
     <div className="space-y-6">
-      <Section title="Add material">
+      <Section title={isVideo ? "Upload a pre-recorded video" : "Add learning material"}>
         <form onSubmit={handleSubmit} noValidate className="space-y-4 p-5">
           <FormError message={formError} />
+          {!isVideo && (
           <div className="inline-flex rounded-lg border border-slate-200 dark:border-slate-800 p-1">
             {[
-              ["file", "Upload a file or video"],
+              ["file", "Upload a file"],
               ["link", "Share a link"],
             ].map(([id, label]) => (
               <button
@@ -85,15 +90,21 @@ export default function MaterialsTab({ slug, data, reload }) {
               </button>
             ))}
           </div>
+          )}
           <div className="grid gap-4 sm:grid-cols-2">
-            <TextInput id="m-title" label="Title" value={title} onChange={setTitle} placeholder="e.g. Week 1 slides" />
+            <TextInput id="m-title" label="Title" value={title} onChange={setTitle} placeholder={isVideo ? "e.g. Lecture 3: Flexbox" : "e.g. Week 1 slides"} />
             {mode === "file" ? (
               <FileInput
                 id="m-file"
-                label="File"
+                label={isVideo ? "Video" : "File"}
                 onChange={setFile}
                 inputRef={fileRef}
-                hint="Documents, slides, images, or videos, up to 500 MB. Videos play right on the course page."
+                accept={isVideo ? "video/*" : undefined}
+                hint={
+                  isVideo
+                    ? "MP4 or WebM, up to 500 MB. Students watch it right on the course page."
+                    : "Documents, slides, or images, up to 500 MB. Videos go in the Videos section."
+                }
               />
             ) : (
               <TextInput id="m-url" label="Link" type="url" value={url} onChange={setUrl} placeholder="https://" />
@@ -116,12 +127,12 @@ export default function MaterialsTab({ slug, data, reload }) {
 
       <ErrorNote error={actionError} />
 
-      <Section title={`Materials (${data.materials.length})`}>
-        {data.materials.length === 0 ? (
-          <EmptyState>Nothing shared yet.</EmptyState>
+      <Section title={`${isVideo ? "Videos" : "Materials"} (${items.length})`}>
+        {items.length === 0 ? (
+          <EmptyState>{isVideo ? "No videos yet." : "Nothing shared yet."}</EmptyState>
         ) : (
           <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
-            {data.materials.map((m) => {
+            {items.map((m) => {
               const Icon = kindIcons[m.kind];
               return (
                 <li key={m.id} className="px-5 py-4">
