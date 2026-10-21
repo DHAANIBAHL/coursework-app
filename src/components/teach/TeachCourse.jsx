@@ -9,6 +9,7 @@ import {
   Megaphone,
   PlayCircle,
   Radio,
+  Sparkles,
   Users,
 } from "lucide-react";
 import { ErrorNote, Loading, PageHeading } from "@/components/panel/Panel";
@@ -18,6 +19,7 @@ import GoLive from "@/components/teach/GoLive";
 import StudentsTab from "@/components/teach/StudentsTab";
 import MaterialsTab from "@/components/teach/MaterialsTab";
 import AnnouncementsTab from "@/components/teach/AnnouncementsTab";
+import AiAssistantTab from "@/components/teach/AiAssistantTab";
 import AssignmentsTab from "@/components/teach/AssignmentsTab";
 import QuizzesTab from "@/components/teach/QuizzesTab";
 import SessionsTab from "@/components/teach/SessionsTab";
@@ -61,6 +63,15 @@ const sections = [
     render: (p) => <QuizzesTab {...p} kind="test" />,
     count: (d) => d.quizzes.filter((q) => q.kind === "test").length,
     countLabel: "tests",
+  },
+  {
+    id: "assistant",
+    label: "AI quiz assistant",
+    icon: Sparkles,
+    hint: "Describe a topic, get questions to save as a quiz or test",
+    render: (p) => <AiAssistantTab {...p} />,
+    count: () => null, // nothing to count; the card shows "New" instead
+    countLabel: "",
   },
   {
     id: "assignments",
@@ -184,8 +195,14 @@ function Overview({ slug, data, reload, onOpen }) {
                   <s.icon className="size-5" />
                 </span>
                 <span className="text-right">
-                  <span className="block text-2xl font-semibold text-slate-900 dark:text-slate-100">{n}</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400">{s.countLabel}</span>
+                  {n === null ? (
+                    <span className="rounded-full bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 text-xs font-medium text-blue-600 dark:text-blue-400">New</span>
+                  ) : (
+                    <>
+                      <span className="block text-2xl font-semibold text-slate-900 dark:text-slate-100">{n}</span>
+                      <span className="text-xs text-slate-500 dark:text-slate-400">{s.countLabel}</span>
+                    </>
+                  )}
                 </span>
               </div>
               <p className="mt-4 font-semibold text-slate-900 dark:text-slate-100 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
