@@ -39,9 +39,9 @@ const sections = [
     id: "announcements",
     label: "Announcements",
     icon: Megaphone,
-    hint: "News for everyone in the class",
+    hint: "Post now, schedule for later, or save drafts",
     render: (p) => <AnnouncementsTab {...p} />,
-    count: (d) => d.announcements.length,
+    count: (d) => d.announcements.filter((a) => (a.status ?? "posted") === "posted").length,
     countLabel: "posted",
   },
   {

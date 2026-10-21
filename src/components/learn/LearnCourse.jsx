@@ -4,6 +4,8 @@ import { CheckCircle2, Circle, Download, ExternalLink, FileText, Link2, Megaphon
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState, ErrorNote, Loading, PageHeading, Section } from "@/components/panel/Panel";
 import DeadlineStatus from "@/components/learn/DeadlineStatus";
+import { CategoryChip, PinnedChip } from "@/components/panel/CategoryChip";
+import { relatedLinkForStudent } from "@/lib/announcements";
 import SubmitAssignment from "@/components/learn/SubmitAssignment";
 import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
@@ -257,12 +259,21 @@ function Announcements({ data }) {
       {data.announcements.map((a) => (
         <Section key={a.id}>
           <div className="p-5">
-            <p className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
-              <Megaphone className="size-4 text-blue-600 dark:text-blue-400" /> {a.title}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <p className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
+                <Megaphone className="size-4 text-blue-600 dark:text-blue-400" /> {a.title}
+              </p>
+              <CategoryChip announcement={a} />
+              {a.pinned && <PinnedChip />}
+            </div>
             <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-slate-700 dark:text-slate-300">{a.body}</p>
+            {relatedLinkForStudent(a) && (
+              <Link to={relatedLinkForStudent(a)} className={`${buttonVariants({ size: "sm", variant: "outline" })} mt-3`}>
+                Open {a.related.title ?? "it"}
+              </Link>
+            )}
             <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
-              {a.authorName ?? "Teacher"} · {formatDate(a.createdAt, true)}
+              {a.authorName ?? "Teacher"} · {formatDate(a.publishAt ?? a.createdAt, true)}
             </p>
           </div>
         </Section>
