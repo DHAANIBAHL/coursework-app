@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { ExternalLink, X } from "lucide-react";
+import { ExternalLink, Eye, X } from "lucide-react";
 import { ErrorNote, PageHeading, Section } from "@/components/panel/Panel";
 import { courses } from "@/data/courses";
 import { api, useApi } from "@/lib/api";
@@ -90,12 +90,20 @@ export default function AdminContent() {
                     </td>
                     <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">{data?.enrollments[c.slug] ?? 0}</td>
                     <td className="px-5 py-3 text-right">
-                      <Link
-                        to={`/course/${c.slug}`}
-                        className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
-                      >
-                        View <ExternalLink className="size-3.5" />
-                      </Link>
+                      <div className="flex justify-end gap-3 whitespace-nowrap">
+                        <Link
+                          to={`/teach/courses/${c.slug}/student-view`}
+                          className="inline-flex items-center gap-1 text-violet-700 dark:text-violet-300 hover:underline"
+                        >
+                          <Eye className="size-3.5" /> Student view
+                        </Link>
+                        <Link
+                          to={`/course/${c.slug}`}
+                          className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline"
+                        >
+                          Lessons <ExternalLink className="size-3.5" />
+                        </Link>
+                      </div>
                     </td>
                   </tr>
                 );
