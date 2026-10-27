@@ -2,7 +2,7 @@
 
 Course content (13 courses, 228 lessons, 39 built-in quizzes, 293 questions) is hardcoded in `src/data/`, while everything people do is already in 14 MySQL tables keyed to courses by a text slug. This document lists where every piece of displayed content comes from today, then proposes a relational model that moves the course catalog into MySQL and replaces the slug and text-key links with real foreign keys.
 
-Status: proposal. No code or schema has been changed.
+Status: proposal. The app still runs on the current schema. [`database/schema.sql`](../database/schema.sql) builds this model as a separate `coursework_v2` database, and [`database/seed.sql`](../database/seed.sql) fills it with mock data (10 courses, 41 modules, 180 lessons, 5 instructors, 20 students, enrollments, progress, quiz attempts and reviews).
 
 ## 1. Pages and what they display
 
@@ -111,7 +111,8 @@ All tables use InnoDB and `utf8mb4`. Times are `DATETIME` in whole seconds, as t
 ```mermaid
 erDiagram
   categories ||--o{ courses : groups
-  courses ||--o{ lessons : contains
+  courses ||--o{ modules : "split into"
+  modules ||--o{ lessons : contains
   courses ||--o{ quizzes : has
   quizzes ||--o{ quiz_questions : contains
   quiz_questions ||--o{ quiz_options : offers
@@ -119,6 +120,7 @@ erDiagram
   courses ||--o{ course_teachers : "taught by"
   users ||--o{ enrollments : joins
   courses ||--o{ enrollments : "joined by"
+  enrollments ||--o| course_reviews : "reviewed in"
   users ||--o{ lesson_progress : completes
   lessons ||--o{ lesson_progress : "completed in"
   courses ||--o{ assignments : sets
@@ -161,13 +163,25 @@ erDiagram
 | `status` | ENUM('draft','published','archived') | NOT NULL DEFAULT 'draft' | Only published courses show in the catalog |
 | `created_at`, `updated_at` | DATETIME | NOT NULL | |
 
+**modules** — a course is split into modules (3–5 in the mock data), each holding a run of lessons
+
+| Column | Type | Key / constraint | Notes |
+| --- | --- | --- | --- |
+| `id` | INT AUTO_INCREMENT | PK; also UNIQUE (`id`, `course_id`) | The pair is what `lessons` points at |
+| `course_id` | INT | FK → `courses.id`, ON DELETE CASCADE | |
+| `position` | INT | NOT NULL; UNIQUE (`course_id`, `position`) | 1-based order |
+| `title` | VARCHAR(200) | NOT NULL | |
+| `summary` | VARCHAR(500) | NULL | |
+| `created_at`, `updated_at` | DATETIME | NOT NULL | |
+
 **lessons**
 
 | Column | Type | Key / constraint | Notes |
 | --- | --- | --- | --- |
 | `id` | INT AUTO_INCREMENT | PK | Stable id; progress points here, not at a position |
 | `course_id` | INT | FK → `courses.id`, ON DELETE CASCADE | |
-| `position` | INT | NOT NULL; UNIQUE (`course_id`, `position`) | 1-based order; reordering changes only this |
+| `module_id` | INT | FK (`module_id`, `course_id`) → `modules` (`id`, `course_id`), ON DELETE CASCADE | The composite key stops a lesson pointing at another course's module |
+| `position` | INT | NOT NULL; UNIQUE (`course_id`, `position`) | 1-based across the whole course, so `#lesson-<n>` links and "Lessons 1–6" ranges keep working; reordering changes only this |
 | `title` | VARCHAR(200) | NOT NULL | |
 | `body` | TEXT | NOT NULL | |
 | `code` | TEXT | NULL | Code sample |
@@ -261,6 +275,16 @@ Catalog quizzes are graded in the browser today and only send a score. They can 
 | `course_teachers` | `course_id` INT, `teacher_id` INT, `assigned_at` DATETIME | PK (`course_id`, `teacher_id`); FKs → `courses.id`, `users.id`, both ON DELETE CASCADE |
 | `enrollments` | `student_id` INT, `course_id` INT, `enrolled_at` DATETIME | PK (`student_id`, `course_id`); INDEX (`course_id`); FKs CASCADE |
 
+**course_reviews** (new) — one rating per student per course
+
+| Column | Type | Key / constraint | Notes |
+| --- | --- | --- | --- |
+| `id` | INT AUTO_INCREMENT | PK | |
+| `course_id`, `student_id` | INT | UNIQUE (`course_id`, `student_id`); FK (`student_id`, `course_id`) → `enrollments`, ON DELETE CASCADE | Only students who joined can review; leaving the course removes the review |
+| `rating` | TINYINT | NOT NULL; CHECK 1–5 | |
+| `comment` | TEXT | NULL | A rating alone is allowed |
+| `created_at`, `updated_at` | DATETIME | NOT NULL | |
+
 **lesson_progress** (changed: points at the lesson, not its position)
 
 | Column | Type | Key / constraint |
@@ -280,7 +304,7 @@ These tables keep their columns from migrations 003–005; the change is `course
 | `live_sessions` | `title` VARCHAR(200), `description` TEXT, `starts_at` DATETIME, `duration_min` INT DEFAULT 60, `meeting_url` VARCHAR(1000); INDEX (`course_id`, `starts_at`) |
 | `announcements` | `title` VARCHAR(200), `body` TEXT, `publish_at` DATETIME NULL (NULL = draft), `category` ENUM(7 values), `pinned` BOOLEAN, plus the related-item keys below |
 
-**announcements: related item.** Today `related_type` + `related_id` is a link MySQL can't check. Replace it with four nullable foreign keys, at most one set (a `CHECK` constraint, MySQL 8.0.16+):
+**announcements: related item.** Today `related_type` + `related_id` is a link MySQL can't check. Replace it with four nullable foreign keys, at most one set. The server has to enforce "at most one": MySQL rejects a `CHECK` on columns whose foreign key uses ON DELETE SET NULL (error 3823).
 
 | Column | Type | Key |
 | --- | --- | --- |
@@ -323,7 +347,7 @@ These tables keep their columns from migrations 003–005; the change is `course
 
 ## 4. Migration path
 
-1. **Catalog tables.** Add `categories`, `courses`, `lessons`, `quizzes`, `quiz_questions`, `quiz_options`. A one-off script imports the 13 course files, keeping slugs and quiz ids. The website keeps reading `src/data/` until a read API (`GET /api/courses`, `GET /api/courses/:slug`) replaces `getCourse()`.
+1. **Catalog tables.** Add `categories`, `courses`, `modules`, `lessons`, `quizzes`, `quiz_questions`, `quiz_options`. A one-off script imports the 13 course files, keeping slugs and quiz ids. The website keeps reading `src/data/` until a read API (`GET /api/courses`, `GET /api/courses/:slug`) replaces `getCourse()`.
 2. **Switch keys.** Add `course_id` beside `course_slug` and `lesson_id` beside `lesson_index`, backfill from the slugs and positions, then drop the old columns. Move `class_quizzes` rows into `quizzes` (`origin = 'teacher'`) and `quiz_key` into `quiz_id`.
 3. **Site content.** Optional: move contact topics and FAQs into the database once there's an admin screen to edit them.
 
