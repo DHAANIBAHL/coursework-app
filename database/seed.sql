@@ -8,40 +8,41 @@
 -- account's password is Demo@1234, and every email ends in @demo.coursework.test.
 -- Rows use explicit ids, and tables are filled parents first.
 --
--- The ids are fixed, so load it into a freshly created schema; to load it
--- again, run schema.sql first.
+-- The ids are fixed, so load it right after schema.sql, into the same new
+-- database:
+--
+--   mysql -u root -p learning_platform < database/seed.sql
 
 SET NAMES utf8mb4;
-USE coursework_v2;
 
 -- users: 26 rows
 INSERT INTO users (id, name, email, password_hash, role, bio, created_at) VALUES
-  (1, 'Kavya Menon', 'kavya.menon@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'admin', NULL, '2026-06-02 10:15:00'),
-  (2, 'Ananya Rao', 'ananya.rao@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'teacher', 'Front-end developer and designer with eight years of building accessible websites for small businesses and charities.', '2026-06-10 09:30:00'),
-  (3, 'Daniel Okafor', 'daniel.okafor@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'teacher', 'Full-stack JavaScript engineer who has shipped Node.js services at two fintech start-ups and mentors new developers.', '2026-06-11 14:05:00'),
-  (4, 'Meera Iyer', 'meera.iyer@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'teacher', 'Data scientist and former maths teacher; teaches Python and machine learning with small, practical projects.', '2026-06-12 11:40:00'),
-  (5, 'Lucas Fernandes', 'lucas.fernandes@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'teacher', 'Backend and platform engineer focused on databases, cloud infrastructure and keeping production calm.', '2026-06-15 16:20:00'),
-  (6, 'Sofia Martins', 'sofia.martins@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'teacher', 'Software engineer and open-source maintainer who loves version control, algorithms and clear code reviews.', '2026-06-18 08:50:00'),
-  (7, 'Aarav Sharma', 'aarav.sharma@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-16 17:36:15'),
-  (8, 'Priya Patel', 'priya.patel@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-02 17:17:32'),
-  (9, 'Rohan Gupta', 'rohan.gupta@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-23 08:24:35'),
-  (10, 'Isha Reddy', 'isha.reddy@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-21 14:01:26'),
-  (11, 'Arjun Nair', 'arjun.nair@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-09 11:10:54'),
-  (12, 'Neha Kapoor', 'neha.kapoor@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-24 19:04:40'),
-  (13, 'Vikram Singh', 'vikram.singh@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-14 16:25:29'),
-  (14, 'Sneha Joshi', 'sneha.joshi@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-25 11:04:20'),
-  (15, 'Kabir Malhotra', 'kabir.malhotra@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-09 11:54:58'),
-  (16, 'Diya Choudhury', 'diya.choudhury@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-11 21:41:49'),
-  (17, 'Emily Carter', 'emily.carter@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-09-08 11:17:21'),
-  (18, 'James Wilson', 'james.wilson@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-31 13:34:14'),
-  (19, 'Chloe Nguyen', 'chloe.nguyen@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-09-14 11:51:07'),
-  (20, 'Mohammed Al-Farsi', 'mohammed.alfarsi@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-28 14:35:42'),
-  (21, 'Fatima Khan', 'fatima.khan@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-09-08 17:49:24'),
-  (22, 'Liam O''Brien', 'liam.obrien@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-23 14:27:52'),
-  (23, 'Hannah Schmidt', 'hannah.schmidt@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-26 15:40:09'),
-  (24, 'Mateo Garcia', 'mateo.garcia@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-09-18 09:32:18'),
-  (25, 'Yuki Tanaka', 'yuki.tanaka@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-09-06 19:03:30'),
-  (26, 'Grace Mensah', 'grace.mensah@demo.coursework.test', '$2a$10$enj9bPHrunX.qMm5Ig9BpOIi6hN2LhWuwW.eX8Z14hZ3sSuJYwK7K', 'student', NULL, '2026-08-09 14:07:12');
+  (1, 'Kavya Menon', 'kavya.menon@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'admin', NULL, '2026-06-02 10:15:00'),
+  (2, 'Ananya Rao', 'ananya.rao@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'teacher', 'Front-end developer and designer with eight years of building accessible websites for small businesses and charities.', '2026-06-10 09:30:00'),
+  (3, 'Daniel Okafor', 'daniel.okafor@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'teacher', 'Full-stack JavaScript engineer who has shipped Node.js services at two fintech start-ups and mentors new developers.', '2026-06-11 14:05:00'),
+  (4, 'Meera Iyer', 'meera.iyer@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'teacher', 'Data scientist and former maths teacher; teaches Python and machine learning with small, practical projects.', '2026-06-12 11:40:00'),
+  (5, 'Lucas Fernandes', 'lucas.fernandes@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'teacher', 'Backend and platform engineer focused on databases, cloud infrastructure and keeping production calm.', '2026-06-15 16:20:00'),
+  (6, 'Sofia Martins', 'sofia.martins@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'teacher', 'Software engineer and open-source maintainer who loves version control, algorithms and clear code reviews.', '2026-06-18 08:50:00'),
+  (7, 'Aarav Sharma', 'aarav.sharma@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-16 17:36:15'),
+  (8, 'Priya Patel', 'priya.patel@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-02 17:17:32'),
+  (9, 'Rohan Gupta', 'rohan.gupta@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-23 08:24:35'),
+  (10, 'Isha Reddy', 'isha.reddy@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-21 14:01:26'),
+  (11, 'Arjun Nair', 'arjun.nair@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-09 11:10:54'),
+  (12, 'Neha Kapoor', 'neha.kapoor@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-24 19:04:40'),
+  (13, 'Vikram Singh', 'vikram.singh@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-14 16:25:29'),
+  (14, 'Sneha Joshi', 'sneha.joshi@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-25 11:04:20'),
+  (15, 'Kabir Malhotra', 'kabir.malhotra@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-09 11:54:58'),
+  (16, 'Diya Choudhury', 'diya.choudhury@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-11 21:41:49'),
+  (17, 'Emily Carter', 'emily.carter@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-09-08 11:17:21'),
+  (18, 'James Wilson', 'james.wilson@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-31 13:34:14'),
+  (19, 'Chloe Nguyen', 'chloe.nguyen@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-09-14 11:51:07'),
+  (20, 'Mohammed Al-Farsi', 'mohammed.alfarsi@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-28 14:35:42'),
+  (21, 'Fatima Khan', 'fatima.khan@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-09-08 17:49:24'),
+  (22, 'Liam O''Brien', 'liam.obrien@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-23 14:27:52'),
+  (23, 'Hannah Schmidt', 'hannah.schmidt@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-26 15:40:09'),
+  (24, 'Mateo Garcia', 'mateo.garcia@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-09-18 09:32:18'),
+  (25, 'Yuki Tanaka', 'yuki.tanaka@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-09-06 19:03:30'),
+  (26, 'Grace Mensah', 'grace.mensah@demo.coursework.test', '$2a$10$u/Rzlj871GvHQnujjavdQOcbdaKbVnenUhy3F7UUtA2.ypQdxKrFm', 'student', NULL, '2026-08-09 14:07:12');
 
 -- categories: 9 rows
 INSERT INTO categories (id, name, position) VALUES

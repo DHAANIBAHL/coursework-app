@@ -1,45 +1,18 @@
 -- Coursework schema for MySQL 8 (8.0.16 or later), following docs/data-model.md.
 --
 -- This is the proposed model, not the schema the server runs on today
--- (that one is coursework-server/schema.sql plus its migrations). It builds
--- a separate database, coursework_v2, so it never touches the live one.
+-- (that one is coursework-server/schema.sql plus its migrations). Load it
+-- into a new, empty database, then load the mock data:
 --
---   mysql -u root -p < database/schema.sql
---   mysql -u root -p < database/seed.sql
+--   mysql -u root -p -e "CREATE DATABASE learning_platform;"
+--   mysql -u root -p learning_platform < database/schema.sql
+--   mysql -u root -p learning_platform < database/seed.sql
 --
--- Running it again drops and recreates every table in coursework_v2.
+-- There are no DROP statements: pointed at a database that already has these
+-- tables (such as the live one), it stops at the first CREATE TABLE without
+-- changing anything. To start over, drop and recreate the database.
 
 SET NAMES utf8mb4;
-
-CREATE DATABASE IF NOT EXISTS coursework_v2
-  DEFAULT CHARACTER SET utf8mb4 DEFAULT COLLATE utf8mb4_0900_ai_ci;
-USE coursework_v2;
-
--- Dropped children first, so foreign keys never block a rerun.
-DROP TABLE IF EXISTS site_blocks;
-DROP TABLE IF EXISTS faq_entries;
-DROP TABLE IF EXISTS contact_messages;
-DROP TABLE IF EXISTS contact_topics;
-DROP TABLE IF EXISTS submissions;
-DROP TABLE IF EXISTS announcements;
-DROP TABLE IF EXISTS live_sessions;
-DROP TABLE IF EXISTS materials;
-DROP TABLE IF EXISTS assignments;
-DROP TABLE IF EXISTS quiz_attempt_answers;
-DROP TABLE IF EXISTS quiz_attempts;
-DROP TABLE IF EXISTS quiz_sessions;
-DROP TABLE IF EXISTS quiz_options;
-DROP TABLE IF EXISTS quiz_questions;
-DROP TABLE IF EXISTS quizzes;
-DROP TABLE IF EXISTS lesson_progress;
-DROP TABLE IF EXISTS course_reviews;
-DROP TABLE IF EXISTS enrollments;
-DROP TABLE IF EXISTS course_teachers;
-DROP TABLE IF EXISTS lessons;
-DROP TABLE IF EXISTS modules;
-DROP TABLE IF EXISTS courses;
-DROP TABLE IF EXISTS categories;
-DROP TABLE IF EXISTS users;
 
 -- ---------------------------------------------------------------------------
 -- People
