@@ -6,7 +6,7 @@ import { ErrorNote, Section } from "@/components/panel/Panel";
 import { api, useApi } from "@/lib/api";
 
 // A chat where teachers describe a topic and get multiple-choice questions back
-// from the AI (Groq, called by the server). Generated quizzes can be saved as a
+// from the AI (Gemini, OpenAI, Claude, or Groq, called by the server). Generated quizzes can be saved as a
 // draft quiz or test, then reviewed and published from those sections.
 // The conversation is kept for the browser tab in sessionStorage.
 
@@ -111,8 +111,9 @@ export default function AiAssistantTab({ slug, course, reload }) {
           <div className="m-5 rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/50 p-4 text-sm text-amber-800 dark:text-amber-300">
             <p className="font-medium">The assistant isn't set up yet.</p>
             <p className="mt-1">
-              Add a Groq API key as <code className="font-mono">GROQ_API_KEY=…</code> in <code className="font-mono">coursework-server/.env</code>, then
-              restart the server. Keys are free at console.groq.com.
+              Add an AI key to <code className="font-mono">coursework-server/.env</code>, then restart the server. The simplest free option is a
+              Gemini key from aistudio.google.com as <code className="font-mono">GEMINI_API_KEY=…</code>; <code className="font-mono">OPENAI_API_KEY</code>,{" "}
+              <code className="font-mono">ANTHROPIC_API_KEY</code>, and <code className="font-mono">GROQ_API_KEY</code> work too.
             </p>
           </div>
         )}
@@ -207,7 +208,7 @@ export default function AiAssistantTab({ slug, course, reload }) {
             }}
             rows={2}
             disabled={notConfigured}
-            placeholder={notConfigured ? "Set up a Groq API key to start." : "e.g. 6 medium questions on CSS Grid, focused on grid-template-columns"}
+            placeholder={notConfigured ? "Set up an AI key to start." : "e.g. 6 medium questions on CSS Grid, focused on grid-template-columns"}
             aria-label="Message the quiz assistant"
             className="min-h-11 flex-1 resize-y rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 disabled:opacity-60"
           />
@@ -217,7 +218,8 @@ export default function AiAssistantTab({ slug, course, reload }) {
         </form>
       </Section>
       <p className="text-xs text-slate-500 dark:text-slate-400">
-        AI can make mistakes. Quizzes are saved as drafts so you can check every answer before students see them.
+        {status.data?.provider ? `Powered by ${status.data.provider} (${status.data.model}). ` : ""}AI can make mistakes. Quizzes are saved as drafts so you can
+        check every answer before students see them.
       </p>
     </div>
   );
