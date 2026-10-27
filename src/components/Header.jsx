@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import SearchDialog from "@/components/SearchDialog";
 import { buttonVariants } from "@/components/ui/button";
+import { ROLE_LABELS } from "@/lib/roles";
 import { useTheme } from "@/lib/theme";
 import {
   BookOpen,
@@ -179,6 +180,9 @@ export default function Header() {
                 <div className="px-3 py-2">
                   <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{user.name}</p>
                   <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                  <span className="mt-2 inline-block rounded-full bg-blue-50 dark:bg-blue-950/50 px-2 py-0.5 text-xs font-medium text-blue-600 dark:text-blue-400">
+                    {ROLE_LABELS[user.role] ?? user.role}
+                  </span>
                 </div>
                 <div className="my-1 border-t border-slate-200 dark:border-slate-800" />
                 <Link to="/my-learning" role="menuitem" className={menuItem}>

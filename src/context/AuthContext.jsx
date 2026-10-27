@@ -56,6 +56,7 @@ export function AuthProvider({ children }) {
       body: { name, email, password },
     });
     setUser(data.user);
+    return data.user;
   }
 
   async function login({ email, password }) {
@@ -64,6 +65,7 @@ export function AuthProvider({ children }) {
       body: { email, password },
     });
     setUser(data.user);
+    return data.user;
   }
 
   async function logout() {
