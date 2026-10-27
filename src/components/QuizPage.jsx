@@ -20,7 +20,7 @@ export default function QuizPage() {
           <p className="mt-2 text-slate-600 dark:text-slate-400">
             {course ? "This course doesn't have a quiz at this address." : "There's no course at this address."}
           </p>
-          <Link to={course ? `/course/${slug}` : "/"} className={`${buttonVariants()} mt-6`}>
+          <Link to={course ? `/course/${slug}` : "/courses"} className={`${buttonVariants()} mt-6`}>
             {course ? "Back to the course" : "Back to courses"}
           </Link>
         </main>

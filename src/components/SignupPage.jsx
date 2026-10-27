@@ -8,7 +8,7 @@ export default function SignupPage() {
   const { user, loading, signup } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from || "/";
+  const redirectTo = location.state?.from || "/courses";
 
   const [form, setForm] = useState({
     name: "",

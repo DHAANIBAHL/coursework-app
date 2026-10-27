@@ -31,7 +31,7 @@ export default function CoursePage() {
           <p className="mt-2 text-slate-600 dark:text-slate-400">
             There's no course at this address. Check the link or pick one from the catalog.
           </p>
-          <Link to="/" className={`${buttonVariants()} mt-6`}>
+          <Link to="/courses" className={`${buttonVariants()} mt-6`}>
             Back to courses
           </Link>
         </main>
@@ -47,7 +47,7 @@ export default function CoursePage() {
 
       <main className="mx-auto max-w-3xl px-6 py-12">
         <Link
-          to="/"
+          to="/courses"
           className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
         >
           <ArrowLeft className="size-4" />

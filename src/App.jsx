@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import CatalogPage from "@/components/CatalogPage";
 import ContactPage from "@/components/ContactPage";
 import HelpPage from "@/components/HelpPage";
+import LandingPage from "@/components/LandingPage";
 import CoursePage from "@/components/CoursePage";
 import LoginPage from "@/components/LoginPage";
 import QuizPage from "@/components/QuizPage";
@@ -39,6 +40,15 @@ function RequireAuth({ children }) {
   return children;
 }
 
+// The homepage: the public landing page for guests, the catalog for
+// anyone already logged in.
+function Home() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (user) return <Navigate to="/courses" replace />;
+  return <LandingPage />;
+}
+
 function NotFound() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
@@ -56,8 +66,9 @@ export default function App() {
     <>
       <ScrollToTop />
       <Routes>
+        <Route path="/" element={<Home />} />
         <Route
-          path="/"
+          path="/courses"
           element={
             <RequireAuth>
               <CatalogPage />

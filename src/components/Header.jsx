@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import SearchDialog from "@/components/SearchDialog";
+import { buttonVariants } from "@/components/ui/button";
 import { useTheme } from "@/lib/theme";
 import {
   BookOpen,
@@ -14,7 +15,6 @@ import {
   Moon,
   Search,
   Sun,
-  User,
   UserPlus,
   X,
 } from "lucide-react";
@@ -67,7 +67,7 @@ export default function Header() {
   const accountRef = useRef(null);
 
   // "Courses" counts as active on the catalog and on any course page.
-  const onCourses = pathname === "/" || pathname.startsWith("/course");
+  const onCourses = pathname.startsWith("/course");
 
   // Close both menus whenever the page changes.
   useEffect(() => {
@@ -117,7 +117,7 @@ export default function Header() {
         {/* Left-side nav (desktop) */}
         {user && (
         <nav className="hidden items-center gap-1 md:flex">
-          <Link to="/" className={`${linkBase} ${onCourses ? linkActive : linkIdle}`}>
+          <Link to="/courses" className={`${linkBase} ${onCourses ? linkActive : linkIdle}`}>
             Courses
           </Link>
           <Link
@@ -153,6 +153,7 @@ export default function Header() {
 
           <ThemeButton theme={theme} onToggle={toggleTheme} />
 
+          {user ? (
           <div className="relative ml-2" ref={accountRef}>
             <button
               type="button"
@@ -163,7 +164,7 @@ export default function Header() {
               className="flex items-center gap-1 rounded-full p-1 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-600"
             >
               <span className="flex size-8 items-center justify-center rounded-full bg-slate-900 dark:bg-slate-700 text-xs font-semibold text-white">
-                {user ? initials : <User className="size-4" />}
+                {initials}
               </span>
               <ChevronDown
                 className={`size-4 text-slate-500 dark:text-slate-400 transition-transform ${accountOpen ? "rotate-180" : ""}`}
@@ -175,38 +176,33 @@ export default function Header() {
                 role="menu"
                 className="absolute right-0 mt-2 w-60 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2 shadow-lg"
               >
-                {user ? (
-                  <>
-                    <div className="px-3 py-2">
-                      <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{user.name}</p>
-                      <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
-                    </div>
-                    <div className="my-1 border-t border-slate-200 dark:border-slate-800" />
-                    <Link to="/my-learning" role="menuitem" className={menuItem}>
-                      <BookOpen className="size-4" /> My learning
-                    </Link>
-                    <button type="button" role="menuitem" onClick={handleLogout} className={menuItem}>
-                      <LogOut className="size-4" /> Log out
-                    </button>
-                  </>
-                ) : (
-                  <>
-                    <div className="px-3 py-2">
-                      <p className="text-sm font-medium text-slate-900 dark:text-slate-100">You're browsing as a guest</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">Log in to track your progress.</p>
-                    </div>
-                    <div className="my-1 border-t border-slate-200 dark:border-slate-800" />
-                    <Link to="/login" role="menuitem" className={menuItem}>
-                      <LogIn className="size-4" /> Log in
-                    </Link>
-                    <Link to="/signup" role="menuitem" className={menuItem}>
-                      <UserPlus className="size-4" /> Create account
-                    </Link>
-                  </>
-                )}
+                <div className="px-3 py-2">
+                  <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{user.name}</p>
+                  <p className="truncate text-xs text-slate-500 dark:text-slate-400">{user.email}</p>
+                </div>
+                <div className="my-1 border-t border-slate-200 dark:border-slate-800" />
+                <Link to="/my-learning" role="menuitem" className={menuItem}>
+                  <BookOpen className="size-4" /> My learning
+                </Link>
+                <button type="button" role="menuitem" onClick={handleLogout} className={menuItem}>
+                  <LogOut className="size-4" /> Log out
+                </button>
               </div>
             )}
           </div>
+          ) : (
+            // Guests get plain buttons instead of an account menu.
+            <div className="ml-2 flex items-center gap-2">
+              <Link to="/login" className={`${linkBase} ${linkIdle} inline-flex items-center gap-2`}>
+                <LogIn className="size-4" />
+                Log in
+              </Link>
+              <Link to="/signup" className={buttonVariants({ size: "lg" })}>
+                <UserPlus className="size-4" />
+                Sign up free
+              </Link>
+            </div>
+          )}
         </div>
 
         {/* Search and menu buttons (mobile) */}
@@ -240,7 +236,7 @@ export default function Header() {
           <div className="flex flex-col gap-1">
             {user && (
               <>
-                <Link to="/" className={`${linkBase} ${onCourses ? linkActive : linkIdle}`}>
+                <Link to="/courses" className={`${linkBase} ${onCourses ? linkActive : linkIdle}`}>
                   Courses
                 </Link>
                 <Link to="/my-learning" className={`${linkBase} ${linkIdle}`}>My learning</Link>
