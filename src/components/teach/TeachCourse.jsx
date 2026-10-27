@@ -5,7 +5,6 @@ import {
   Eye,
   FileText,
   FlaskConical,
-  LayoutGrid,
   ListChecks,
   Megaphone,
   PlayCircle,
@@ -14,6 +13,7 @@ import {
   Users,
 } from "lucide-react";
 import { ErrorNote, Loading, PageHeading } from "@/components/panel/Panel";
+import SectionMenu from "@/components/panel/SectionMenu";
 import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
 import GoLive from "@/components/teach/GoLive";
@@ -27,10 +27,11 @@ import SessionsTab from "@/components/teach/SessionsTab";
 import { useNow } from "@/lib/useNow";
 
 // The sections of a course, in the order teachers use them. `render` draws the
-// section; `count` and `hint` feed the overview cards.
+// section; `count` and `hint` feed the overview cards; `group` sorts the section menu.
 const sections = [
   {
     id: "live",
+    group: "Teach",
     label: "Live class",
     icon: Radio,
     hint: "Go live now or schedule a class",
@@ -40,6 +41,7 @@ const sections = [
   },
   {
     id: "announcements",
+    group: "Teach",
     label: "Announcements",
     icon: Megaphone,
     hint: "Post now, schedule for later, or save drafts",
@@ -49,6 +51,7 @@ const sections = [
   },
   {
     id: "quizzes",
+    group: "Assess",
     label: "Quizzes",
     icon: ListChecks,
     hint: "Quick practice checks",
@@ -58,6 +61,7 @@ const sections = [
   },
   {
     id: "tests",
+    group: "Assess",
     label: "Tests",
     icon: FlaskConical,
     hint: "Timed assessments with limited attempts",
@@ -67,6 +71,7 @@ const sections = [
   },
   {
     id: "assistant",
+    group: "Assess",
     label: "AI quiz assistant",
     icon: Sparkles,
     hint: "Describe a topic, get questions to save as a quiz or test",
@@ -76,6 +81,7 @@ const sections = [
   },
   {
     id: "assignments",
+    group: "Assess",
     label: "Assignments",
     icon: ClipboardCheck,
     hint: "Set work, collect hand-ins, grade",
@@ -85,6 +91,7 @@ const sections = [
   },
   {
     id: "videos",
+    group: "Content",
     label: "Videos",
     icon: PlayCircle,
     hint: "Pre-recorded lectures",
@@ -94,6 +101,7 @@ const sections = [
   },
   {
     id: "materials",
+    group: "Content",
     label: "Learning materials",
     icon: FileText,
     hint: "Documents, slides, and links",
@@ -103,6 +111,7 @@ const sections = [
   },
   {
     id: "students",
+    group: "People",
     label: "Students",
     icon: Users,
     hint: "Progress and results",
@@ -126,13 +135,6 @@ export default function TeachCourse() {
   const active = sections.find((s) => s.id === requested) ?? null; // null = overview
   const open = (id) => setParams(id ? { tab: id } : {});
 
-  const tabClass = (on) =>
-    `-mb-px flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
-      on
-        ? "border-blue-600 dark:border-blue-400 text-slate-900 dark:text-slate-100"
-        : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white"
-    }`;
-
   return (
     <>
       <PageHeading
@@ -155,16 +157,7 @@ export default function TeachCourse() {
         }
       />
 
-      <div role="tablist" className="-mx-6 mb-6 flex gap-1 overflow-x-auto border-b border-slate-200 dark:border-slate-800 px-6 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
-        <button type="button" role="tab" aria-selected={!active} onClick={() => open(null)} className={tabClass(!active)}>
-          <LayoutGrid className="size-3.5" /> Overview
-        </button>
-        {sections.map((s) => (
-          <button key={s.id} type="button" role="tab" aria-selected={active?.id === s.id} onClick={() => open(s.id)} className={tabClass(active?.id === s.id)}>
-            <s.icon className="size-3.5" /> {s.label}
-          </button>
-        ))}
-      </div>
+      <SectionMenu sections={sections} active={active?.id ?? null} onOpen={open} />
 
       <ErrorNote error={error} onRetry={reload} />
       {loading && !data ? (
