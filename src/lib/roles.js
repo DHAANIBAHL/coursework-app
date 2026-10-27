@@ -9,7 +9,7 @@ export const ROLE_LABELS = {
 // Each role's own area is added as it's built; until then it's the catalog.
 const HOME_PATHS = {
   student: "/courses",
-  teacher: "/courses",
+  teacher: "/teach",
   admin: "/admin",
 };
 

@@ -50,3 +50,30 @@ export function useApi(path) {
   const loading = result.key !== key;
   return { data: result.data, error: loading ? null : result.error, loading, reload };
 }
+
+// Like api() for uploads, but reports progress (0–1) through onProgress,
+// which fetch() can't do. Used for large files such as lesson videos.
+export function uploadWithProgress(path, formData, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", `/api${path}`);
+    xhr.upload.onprogress = (e) => {
+      if (e.lengthComputable) onProgress?.(e.loaded / e.total);
+    };
+    xhr.onload = () => {
+      let data;
+      try {
+        data = JSON.parse(xhr.responseText);
+      } catch {
+        data = {};
+      }
+      if (xhr.status >= 200 && xhr.status < 300) return resolve(data);
+      const error = new Error(data.error || "The upload didn't work. Try again.");
+      error.code = data.code;
+      error.status = xhr.status;
+      reject(error);
+    };
+    xhr.onerror = () => reject(new Error("Can't reach the server. Make sure the backend is running."));
+    xhr.send(formData);
+  });
+}

@@ -6,7 +6,8 @@ import Header from "@/components/Header";
 
 // Page frame with a sidebar on desktop and scrollable tabs on phones.
 // `items`: [{ to, label, icon, end }] — `end` makes "/admin" match only itself.
-export function PanelLayout({ title, items }) {
+// `context` is passed to the child page (read it with useOutletContext()).
+export function PanelLayout({ title, items, context, footer }) {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header />
@@ -34,9 +35,10 @@ export function PanelLayout({ title, items }) {
               </NavLink>
             ))}
           </nav>
+          {footer}
         </aside>
         <main className="min-w-0 flex-1">
-          <Outlet />
+          <Outlet context={context} />
         </main>
       </div>
     </div>
