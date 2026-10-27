@@ -22,7 +22,7 @@ Source key: **data** = `src/data/courses.js` and `src/data/course-content/*.js`;
 | Route | Component | Content shown | Source |
 | --- | --- | --- | --- |
 | `/courses` | `CatalogPage.jsx`, `CourseCard.jsx` | "N courses. N lessons. N quizzes." and a card per course (image or tag on colour, tag, title, description, counts) | Data |
-| `/course/:slug` | `CoursePage.jsx` | Tag, title, description; every lesson (body, code sample, follow-up text); built-in quizzes; join panel naming the teachers; lesson ticks | Course and lessons: data. Teachers, enrollment, progress: API `/learn/courses/:slug` |
+| `/course/:slug` | `CoursePage.jsx` | Tag, title, description; every lesson (video if any, body, code sample, follow-up text); built-in quizzes; join panel naming the teachers; lesson ticks | Course and lessons: data. Teachers, enrollment, progress: API `/learn/courses/:slug` |
 | `/course/:slug/quiz/:quizId` | `QuizPage.jsx` | Built-in quiz questions, options, explanations, score | Data; score saved to API |
 | Header search (Ctrl+K) | `SearchDialog.jsx`, `lib/search.js` | Matching courses, lessons and quizzes | Index built from data at load time |
 
@@ -61,7 +61,7 @@ All 13 course files have the same shape, with no optional fields:
 
 ```text
 Course   { slug, tag, title, image, color, description, lessons[], quizzes[] }
-Lesson   { title, body, code, after }
+Lesson   { title, video?, body, code, after }          // video: a path under public/videos/
 Quiz     { id, title, description, questions[] }       // description starts "Lessons 1–6: …"
 Question { id, prompt, options[], correct, explanation } // always 4 options, ids a–d
 Option   { id, text }
@@ -70,15 +70,11 @@ Option   { id, text }
 | What | Count | Notes |
 | --- | --- | --- |
 | Courses | 13 | 9 distinct tags; every course has an image in `public/images/` |
-| Lessons | 228 | 15–20 per course; identified only by their position |
+| Lessons | 228 | 15–20 per course; identified only by their position; 6 have a video |
 | Built-in quizzes | 39 | 3 per course, each covering a run of lessons |
 | Questions / options | 293 / 1,172 | `correct` is an option id |
 
-Problems the data model should fix:
-
-- `AdminOverview.jsx:11` and `AdminContent.jsx:62` count `lesson.video`, but no lesson has that field, so both always show 0 videos. Lesson videos were added on the unmerged `add-lesson-video` branch only.
-- `machine-learning` is tagged `Frontend`, which looks like a mistake.
-- `src/components/courses.js` is an older copy of the data that nothing imports.
+Lesson videos are files under `public/videos/`. Only Web Design lessons 1–6 have one so far, and `AdminOverview` and `AdminContent` count them.
 
 ### Site copy and settings
 
@@ -323,7 +319,7 @@ These tables keep their columns from migrations 003–005; the change is `course
 | `quiz_key` text (`builtin:…`, `class:…`) detaches results when a quiz id changes | `quiz_attempts.quiz_id` |
 | Announcement links can point at deleted items | Four nullable FKs with ON DELETE SET NULL |
 | `answers` JSON stores choices only, so editing a quiz changes old results | `quiz_attempt_answers` pointing at option rows; block deleting options that have answers |
-| Admin video counts always show 0 | `lessons.video_url` |
+| Lesson videos live only in code and `public/videos/`, so adding one needs a deploy | `lessons.video_url` |
 
 ## 4. Migration path
 
