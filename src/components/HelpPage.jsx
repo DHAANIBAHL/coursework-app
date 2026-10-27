@@ -61,7 +61,7 @@ const sections = [
       },
       {
         q: "I forgot my password. What can I do?",
-        a: "There's no password reset yet. Contact us and we'll help you get back in.",
+        a: "There's no self-service reset yet. Send us a message from the Contact page with the email you signed up with, and an admin will set a new password for you.",
       },
     ],
   },

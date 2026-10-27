@@ -1,8 +1,14 @@
 import { useEffect } from "react";
 import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import { FileText, Inbox, LayoutDashboard, Users } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { homePathFor } from "@/lib/roles";
 import CatalogPage from "@/components/CatalogPage";
+import AdminContent from "@/components/admin/AdminContent";
+import AdminMessages from "@/components/admin/AdminMessages";
+import AdminOverview from "@/components/admin/AdminOverview";
+import AdminUsers from "@/components/admin/AdminUsers";
+import { PanelLayout } from "@/components/panel/Panel";
 import ContactPage from "@/components/ContactPage";
 import HelpPage from "@/components/HelpPage";
 import LandingPage from "@/components/LandingPage";
@@ -68,6 +74,13 @@ function Home() {
   return <LandingPage />;
 }
 
+const adminNav = [
+  { to: "/admin", label: "Overview", icon: LayoutDashboard, end: true },
+  { to: "/admin/users", label: "Users", icon: Users },
+  { to: "/admin/messages", label: "Messages", icon: Inbox },
+  { to: "/admin/content", label: "Content", icon: FileText },
+];
+
 function NotFound() {
   return (
     <main className="mx-auto max-w-3xl px-6 py-16">
@@ -110,6 +123,19 @@ export default function App() {
             </RequireAuth>
           }
         />
+        <Route
+          path="/admin"
+          element={
+            <RequireAuth roles={["admin"]}>
+              <PanelLayout title="Admin" items={adminNav} />
+            </RequireAuth>
+          }
+        >
+          <Route index element={<AdminOverview />} />
+          <Route path="users" element={<AdminUsers />} />
+          <Route path="messages" element={<AdminMessages />} />
+          <Route path="content" element={<AdminContent />} />
+        </Route>
         <Route path="/help" element={<HelpPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/login" element={<LoginPage />} />

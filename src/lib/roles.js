@@ -10,7 +10,7 @@ export const ROLE_LABELS = {
 const HOME_PATHS = {
   student: "/courses",
   teacher: "/courses",
-  admin: "/courses",
+  admin: "/admin",
 };
 
 export function homePathFor(role) {

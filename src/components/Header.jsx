@@ -127,6 +127,11 @@ export default function Header() {
           >
             My learning
           </Link>
+          {user.role === "admin" && (
+            <Link to="/admin" className={`${linkBase} ${pathname.startsWith("/admin") ? linkActive : linkIdle}`}>
+              Admin
+            </Link>
+          )}
         </nav>
         )}
 
@@ -244,6 +249,11 @@ export default function Header() {
                   Courses
                 </Link>
                 <Link to="/my-learning" className={`${linkBase} ${linkIdle}`}>My learning</Link>
+                {user.role === "admin" && (
+                  <Link to="/admin" className={`${linkBase} ${pathname.startsWith("/admin") ? linkActive : linkIdle}`}>
+                    Admin
+                  </Link>
+                )}
               </>
             )}
             <Link to="/help" className={`${linkBase} ${linkIdle}`}>Help</Link>
