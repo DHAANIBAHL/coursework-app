@@ -1,6 +1,6 @@
 const machineLearning = {
   slug: "machine-learning",
-  tag: "Frontend",
+  tag: "Data Science",
   title: "Machine Learning",
   image: "/images/Machine Learning.png",
   color: "bg-blue-500",

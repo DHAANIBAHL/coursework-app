@@ -90,6 +90,18 @@ export default function CoursePage() {
                 </summary>
 
                 <div className="border-t border-slate-200 dark:border-slate-800 px-4 pb-4 pt-3">
+                  {lesson.video && (
+                    // preload="metadata" loads only the length and first frame until Play is pressed.
+                    // Always a 16:9 frame; videos of other shapes fit inside with black bars.
+                    <video
+                      src={lesson.video}
+                      controls
+                      preload="metadata"
+                      className="mb-4 aspect-video w-full rounded-md bg-black object-contain"
+                    >
+                      Your browser can't play this video.
+                    </video>
+                  )}
                   <p className="leading-relaxed text-slate-700 dark:text-slate-300">{lesson.body}</p>
                   {lesson.code && (
                     <pre className="mt-4 overflow-x-auto rounded-md bg-slate-900 p-4 text-sm text-slate-100 dark:bg-slate-900 dark:ring-1 dark:ring-slate-800">

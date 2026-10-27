@@ -19,11 +19,10 @@ React 19 + Vite, plain JavaScript (JSX, no TypeScript), react-router-dom v7, Tai
 
 **Content is data, not components.** Each course is one file in `src/data/course-content/<slug>.js` (default export). `src/data/courses.js` imports them into the ordered `courses` array and exports `getCourse(slug)` and `getQuiz(course, quizId)`; a new course must be added to that array. Each course has `slug` (becomes the URL `/course/<slug>`), `tag`, `title`, `image` (path under `public/images/`, or `""` to show the `tag` on the `color` block instead), `color`, `description`, `lessons`, and `quizzes`. Pages derive everything from this data (catalog lesson/quiz totals, card labels, the quiz list on the course page), so adding content means editing data files only.
 
-- Lesson shape: `{ title, body, code?, after? }`. `code` is a template literal, so backticks and `${` inside code samples must be escaped (`` \` ``, `\${`).
+- Lesson shape: `{ title, video?, body, code?, after? }`. `code` is a template literal, so backticks and `${` inside code samples must be escaped (`` \` ``, `\${`). `video` is a path under `public/videos/` (e.g. `/videos/Introduction to Web design/C1L1 (Web design).mp4`) and plays above the lesson text.
+- Images and videos go in `public/`, never `dist/`: `dist/` is build output, ignored by git and wiped by every `npm run build`.
 - Quiz shape: `{ id, title, description, questions }`. `id` is kebab-case and becomes the URL `/course/<slug>/quiz/<id>`. Each quiz covers a consecutive section of lessons, and `description` starts with that range ("Lessons 1–6: …").
 - Question shape: `{ id, prompt, options: [{ id, text }], correct, explanation }`, where `correct` is the matching option `id`. Question ids restart at `q1` in each quiz.
-
-`src/components/courses.js` is an older, unused copy of the data. Nothing imports it; edit the files in `src/data/course-content/` instead.
 
 **Routing and auth.** `main.jsx` wraps `<App>` in `BrowserRouter` and `AuthProvider`. `App.jsx` defines the routes. `/` is the public `LandingPage` (a brochure built from the course data) for guests and redirects logged-in users to `/courses`. `/courses` (catalog), `/course/:slug`, and `/course/:slug/quiz/:quizId` are wrapped in `RequireAuth`, which redirects to `/login` and passes `state.from` so login can return the user to where they were headed. `QuizPage` saves the score for students who have joined the course (`POST /api/learn/courses/:slug/builtin-quizzes/:quizId/attempts`; a 403 `NOT_ENROLLED` means show a "join to save" note). `/help` and `/contact` are public (the header links to them for guests too). 
 
