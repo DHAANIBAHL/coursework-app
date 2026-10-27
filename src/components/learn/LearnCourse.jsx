@@ -7,16 +7,18 @@ import DeadlineStatus from "@/components/learn/DeadlineStatus";
 import SubmitAssignment from "@/components/learn/SubmitAssignment";
 import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
-import { fileSize, formatDate, percent, relativeTime } from "@/lib/format";
+import { fileSize, formatDate, percent, plural, relativeTime } from "@/lib/format";
 import { useNow } from "@/lib/useNow";
 
 const tabs = [
   { id: "overview", label: "Overview" },
-  { id: "materials", label: "Materials" },
+  { id: "live", label: "Live class" },
   { id: "announcements", label: "Announcements" },
-  { id: "assignments", label: "Assignments" },
   { id: "quizzes", label: "Quizzes" },
-  { id: "live", label: "Live classes" },
+  { id: "tests", label: "Tests" },
+  { id: "assignments", label: "Assignments" },
+  { id: "videos", label: "Videos" },
+  { id: "materials", label: "Learning materials" },
 ];
 
 // One course from the student's side: progress plus everything the teacher shares.
@@ -26,6 +28,7 @@ export default function LearnCourse() {
   const course = getCourse(slug);
   const { data, error, loading, reload } = useApi(`/learn/courses/${slug}`);
   const active = tabs.find((t) => t.id === params.get("tab"))?.id ?? "overview";
+  const now = useNow();
 
   if (!course) return <ErrorNote error={new Error("There's no course at this address.")} />;
   if (loading && !data) return <Loading />;
@@ -48,11 +51,17 @@ export default function LearnCourse() {
     );
   }
 
+  const ends = (x) => new Date(x.startsAt).getTime() + x.durationMin * 60e3;
+  const liveNow = data.sessions.find((x) => new Date(x.startsAt).getTime() <= now && now < ends(x));
+  const kindOf = (q) => q.kind ?? "quiz";
   const counts = {
-    materials: data.materials.length,
+    live: data.sessions.filter((x) => ends(x) >= now).length,
     announcements: data.announcements.length,
+    quizzes: data.quizzes.filter((q) => kindOf(q) === "quiz" && !q.myResult).length,
+    tests: data.quizzes.filter((q) => kindOf(q) === "test" && !q.myResult).length,
     assignments: data.assignments.filter((a) => !a.mySubmission).length,
-    quizzes: data.quizzes.filter((q) => !q.myResult).length,
+    videos: data.materials.filter((m) => m.kind === "video").length,
+    materials: data.materials.filter((m) => m.kind !== "video").length,
   };
 
   return (
@@ -67,7 +76,27 @@ export default function LearnCourse() {
         }
       />
 
-      <div role="tablist" className="-mx-6 mb-6 flex gap-1 overflow-x-auto border-b border-slate-200 dark:border-slate-800 px-6 md:mx-0 md:px-0">
+      {liveNow && (
+        <div className="mb-6 flex flex-wrap items-center gap-4 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/50 p-4">
+          <span className="relative flex size-3">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-500 opacity-75 motion-reduce:animate-none" />
+            <span className="relative inline-flex size-3 rounded-full bg-red-600" />
+          </span>
+          <p className="min-w-0 flex-1 text-sm text-slate-900 dark:text-slate-100">
+            <span className="font-semibold">Live now:</span> {liveNow.title}
+          </p>
+          <a
+            href={liveNow.meetingUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 hover:shadow-md"
+          >
+            <Video className="size-4" /> Join class
+          </a>
+        </div>
+      )}
+
+      <div role="tablist" className="-mx-6 mb-6 flex gap-1 overflow-x-auto border-b border-slate-200 dark:border-slate-800 px-6 md:mx-0 md:flex-wrap md:overflow-visible md:px-0">
         {tabs.map((t) => (
           <button
             key={t.id}
@@ -89,12 +118,16 @@ export default function LearnCourse() {
         ))}
       </div>
 
-      {active === "overview" && <Overview slug={slug} course={course} data={data} />}
-      {active === "materials" && <Materials data={data} />}
-      {active === "announcements" && <Announcements data={data} />}
-      {active === "assignments" && <Assignments data={data} reload={reload} />}
-      {active === "quizzes" && <Quizzes slug={slug} course={course} data={data} />}
-      {active === "live" && <Live data={data} />}
+      <div key={active} className="page-enter">
+        {active === "overview" && <Overview slug={slug} course={course} data={data} />}
+        {active === "live" && <Live data={data} />}
+        {active === "announcements" && <Announcements data={data} />}
+        {active === "quizzes" && <Quizzes slug={slug} course={course} data={data} kind="quiz" />}
+        {active === "tests" && <Quizzes slug={slug} course={course} data={data} kind="test" />}
+        {active === "assignments" && <Assignments data={data} reload={reload} />}
+        {active === "videos" && <Materials data={data} kind="video" />}
+        {active === "materials" && <Materials data={data} kind="material" />}
+      </div>
     </>
   );
 }
@@ -157,18 +190,20 @@ function Overview({ slug, course, data }) {
 
 const kindIcons = { file: FileText, video: Video, link: Link2 };
 
-function Materials({ data }) {
-  if (data.materials.length === 0) {
+function Materials({ data, kind }) {
+  const isVideo = kind === "video";
+  const items = data.materials.filter((m) => (m.kind === "video") === isVideo);
+  if (items.length === 0) {
     return (
       <Section>
-        <EmptyState>Your teacher hasn't shared any material yet.</EmptyState>
+        <EmptyState>{isVideo ? "No videos yet." : "Your teacher hasn't shared any material yet."}</EmptyState>
       </Section>
     );
   }
   return (
     <Section>
       <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
-        {data.materials.map((m) => {
+        {items.map((m) => {
           const Icon = kindIcons[m.kind];
           return (
             <li key={m.id} className="px-5 py-4">
@@ -259,23 +294,27 @@ function Assignments({ data, reload }) {
   );
 }
 
-function Quizzes({ slug, course, data }) {
+function Quizzes({ slug, course, data, kind }) {
   const now = useNow();
+  const isTest = kind === "test";
+  const items = data.quizzes.filter((q) => (q.kind ?? "quiz") === kind);
   return (
     <div className="space-y-6">
-      <Section title="From your teacher">
-        {data.quizzes.length === 0 ? (
-          <EmptyState>No class quizzes yet.</EmptyState>
+      <Section title={isTest ? "Tests" : "From your teacher"}>
+        {items.length === 0 ? (
+          <EmptyState>{isTest ? "No tests yet." : "No class quizzes yet."}</EmptyState>
         ) : (
           <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
-            {data.quizzes.map((q) => {
+            {items.map((q) => {
               const status = q.myResult ? "graded" : q.dueAt && new Date(q.dueAt).getTime() < now ? "overdue" : "todo";
               return (
                 <li key={q.id} className="flex flex-wrap items-center gap-4 px-5 py-4">
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-slate-900 dark:text-slate-100">{q.title}</p>
                     <p className="text-sm text-slate-600 dark:text-slate-400">
-                      {q.questionCount} questions
+                      {plural(q.questionCount, "question")}
+                      {q.timeLimitMin && ` · ${q.timeLimitMin} min`}
+                      {q.maxAttempts && ` · ${q.maxAttempts} attempt${q.maxAttempts === 1 ? "" : "s"}`}
                       {q.dueAt && ` · due ${formatDate(q.dueAt, true)}`}
                       {q.myResult && ` · best ${q.myResult.best}/${q.myResult.total}`}
                     </p>
@@ -286,7 +325,7 @@ function Quizzes({ slug, course, data }) {
                     <DeadlineStatus status={status} />
                   )}
                   <Link to={`/my-learning/quizzes/${q.id}`} className={buttonVariants({ size: "sm", variant: q.myResult ? "outline" : "default" })}>
-                    {q.myResult ? "Retake" : "Start quiz"}
+                    {q.myResult ? (isTest ? "View" : "Retake") : isTest ? "Open test" : "Start quiz"}
                   </Link>
                 </li>
               );
@@ -294,6 +333,7 @@ function Quizzes({ slug, course, data }) {
           </ul>
         )}
       </Section>
+      {!isTest && (
       <p className="text-sm text-slate-500 dark:text-slate-400">
         The course's own quizzes ({course.quizzes.length}) are on the{" "}
         <Link to={`/my-learning/courses/${slug}`} className="text-blue-600 dark:text-blue-400 hover:underline">
@@ -301,6 +341,7 @@ function Quizzes({ slug, course, data }) {
         </Link>{" "}
         tab.
       </p>
+      )}
     </div>
   );
 }

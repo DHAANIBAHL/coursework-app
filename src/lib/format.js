@@ -56,3 +56,8 @@ export function fileSize(bytes) {
   }
   return `${n < 10 && i > 0 ? n.toFixed(1) : Math.round(n)} ${units[i]}`;
 }
+
+// "1 question", "3 questions"
+export function plural(n, word, pluralWord = `${word}s`) {
+  return `${n} ${n === 1 ? word : pluralWord}`;
+}

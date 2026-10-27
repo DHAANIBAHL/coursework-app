@@ -225,7 +225,7 @@ export default function LearnDashboard() {
 
 function DeadlineRow({ d }) {
   const to =
-    d.type === "quiz"
+    d.type === "quiz" || d.type === "test"
       ? `/my-learning/quizzes/${d.id}`
       : `/my-learning/courses/${d.courseSlug}?tab=assignments#assignment-${d.id}`;
   return (
@@ -233,7 +233,7 @@ function DeadlineRow({ d }) {
       <Link to={to} className="flex items-center gap-4 px-5 py-3 hover:bg-slate-50 dark:hover:bg-slate-800">
         <div className="min-w-0 flex-1">
           <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">
-            {d.title} <span className="font-normal text-slate-500 dark:text-slate-400">· {d.type === "quiz" ? "Quiz" : "Assignment"}</span>
+            {d.title} <span className="font-normal text-slate-500 dark:text-slate-400">· {{ quiz: "Quiz", test: "Test" }[d.type] ?? "Assignment"}</span>
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">
             {getCourse(d.courseSlug)?.title} · due {formatDate(d.dueAt, true)} ({relativeTime(d.dueAt)})
