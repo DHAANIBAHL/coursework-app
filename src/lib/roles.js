@@ -6,9 +6,8 @@ export const ROLE_LABELS = {
 };
 
 // Where each role lands after logging in, and where "/" sends them.
-// Each role's own area is added as it's built; until then it's the catalog.
 const HOME_PATHS = {
-  student: "/courses",
+  student: "/my-learning",
   teacher: "/teach",
   admin: "/admin",
 };

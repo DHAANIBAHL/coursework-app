@@ -9,6 +9,10 @@ import AdminMessages from "@/components/admin/AdminMessages";
 import AdminOverview from "@/components/admin/AdminOverview";
 import AdminUsers from "@/components/admin/AdminUsers";
 import { PanelLayout } from "@/components/panel/Panel";
+import ClassQuiz from "@/components/learn/ClassQuiz";
+import LearnCourse from "@/components/learn/LearnCourse";
+import LearnDashboard from "@/components/learn/LearnDashboard";
+import LearnLayout from "@/components/learn/LearnLayout";
 import TeachCourse from "@/components/teach/TeachCourse";
 import TeachDashboard from "@/components/teach/TeachDashboard";
 import TeachLayout from "@/components/teach/TeachLayout";
@@ -138,6 +142,18 @@ export default function App() {
           <Route path="users" element={<AdminUsers />} />
           <Route path="messages" element={<AdminMessages />} />
           <Route path="content" element={<AdminContent />} />
+        </Route>
+        <Route
+          path="/my-learning"
+          element={
+            <RequireAuth>
+              <LearnLayout />
+            </RequireAuth>
+          }
+        >
+          <Route index element={<LearnDashboard />} />
+          <Route path="courses/:slug" element={<LearnCourse />} />
+          <Route path="quizzes/:id" element={<ClassQuiz />} />
         </Route>
         <Route
           path="/teach"

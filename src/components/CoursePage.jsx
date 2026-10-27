@@ -1,16 +1,18 @@
 import { useEffect } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { ArrowLeft, ChevronDown } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ChevronDown, Circle, GraduationCap } from "lucide-react";
 import Header from "@/components/Header";
 import { Badge } from "@/components/ui/badge";
-import { buttonVariants } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { getCourse } from "@/data/courses";
+import { nextLessonIndex, useEnrollment } from "@/lib/learning";
 
 export default function CoursePage() {
   // Reads ":slug" from the URL, e.g. /course/web-design -> "web-design"
   const { slug } = useParams();
   const course = getCourse(slug);
   const { hash } = useLocation();
+  const enrollment = useEnrollment(slug);
 
   // A link like /course/web-design#lesson-5 (e.g. from search) opens that
   // lesson and scrolls to it.
@@ -62,6 +64,8 @@ export default function CoursePage() {
         <h1 className="mt-4 text-4xl font-semibold text-slate-900 dark:text-slate-100">{title}</h1>
         <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">{description}</p>
 
+        <EnrollPanel slug={slug} lessons={lessons} enrollment={enrollment} />
+
         <h2 className="mt-12 text-xl font-semibold text-slate-900 dark:text-slate-100">Lessons</h2>
 
         {lessons.length === 0 ? (
@@ -79,6 +83,9 @@ export default function CoursePage() {
                 <summary className="flex cursor-pointer list-none items-center gap-3 p-4 font-medium text-slate-900 dark:text-slate-100 [&::-webkit-details-marker]:hidden">
                   <span className="text-sm text-blue-600 dark:text-blue-400">Lesson {index + 1}</span>
                   <span className="flex-1">{lesson.title}</span>
+                  {enrollment.completed.has(index) && (
+                    <CheckCircle2 className="size-4 text-green-600 dark:text-green-400" aria-label="Completed" />
+                  )}
                   <ChevronDown className="size-4 text-slate-400 dark:text-slate-500 transition-transform group-open:rotate-180" />
                 </summary>
 
@@ -91,6 +98,12 @@ export default function CoursePage() {
                   )}
                   {lesson.after && (
                     <p className="mt-4 leading-relaxed text-slate-700 dark:text-slate-300">{lesson.after}</p>
+                  )}
+                  {enrollment.enrolled && (
+                    <LessonDoneButton
+                      done={enrollment.completed.has(index)}
+                      onChange={(done) => enrollment.setLessonDone(index, done)}
+                    />
                   )}
                 </div>
               </details>
@@ -127,5 +140,74 @@ export default function CoursePage() {
         )}
       </main>
     </div>
+  );
+}
+
+// Join the course, or (once joined) see progress and jump to the next lesson.
+function EnrollPanel({ slug, lessons, enrollment }) {
+  const { enrolled, completed, teachers, loading, busy, error, join } = enrollment;
+  if (loading) return null;
+
+  if (!enrolled) {
+    return (
+      <div className="mt-8 flex flex-wrap items-center gap-4 rounded-lg border border-slate-200 dark:border-slate-800 p-5">
+        <GraduationCap className="size-8 shrink-0 text-blue-600 dark:text-blue-400" />
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-slate-900 dark:text-slate-100">Join this course</p>
+          <p className="text-sm text-slate-600 dark:text-slate-400">
+            Track your progress, save quiz scores, and get class material, assignments, and live classes
+            {teachers.length > 0 && ` from ${teachers.join(", ")}`}.
+          </p>
+          {error && <p className="mt-1 text-sm text-red-600 dark:text-red-400">{error.message}</p>}
+        </div>
+        <Button onClick={join} disabled={busy}>
+          {busy ? "Joining…" : "Join course"}
+        </Button>
+      </div>
+    );
+  }
+
+  const done = completed.size;
+  const total = lessons.length;
+  const next = nextLessonIndex(total, completed);
+  return (
+    <div className="mt-8 rounded-lg border border-slate-200 dark:border-slate-800 p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="font-medium text-slate-900 dark:text-slate-100">
+          {done === total && total > 0 ? "Course complete. Nice work!" : `${done} of ${total} lessons complete`}
+        </p>
+        <div className="flex flex-wrap gap-3 text-sm">
+          {done < total && (
+            <a href={`#lesson-${next + 1}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+              Next: lesson {next + 1}
+            </a>
+          )}
+          <Link to={`/my-learning/courses/${slug}`} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+            Open classroom
+          </Link>
+        </div>
+      </div>
+      <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+        <div className="h-full rounded-full bg-green-600 dark:bg-green-400 transition-all" style={{ width: `${total ? (done / total) * 100 : 0}%` }} />
+      </div>
+      {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error.message}</p>}
+    </div>
+  );
+}
+
+function LessonDoneButton({ done, onChange }) {
+  return (
+    <button
+      type="button"
+      onClick={() => onChange(!done)}
+      className={`mt-5 inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+        done
+          ? "border-green-600 dark:border-green-400 bg-green-50 dark:bg-green-950/50 text-green-700 dark:text-green-300"
+          : "border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
+      }`}
+    >
+      {done ? <CheckCircle2 className="size-4" /> : <Circle className="size-4" />}
+      {done ? "Completed" : "Mark as complete"}
+    </button>
   );
 }
