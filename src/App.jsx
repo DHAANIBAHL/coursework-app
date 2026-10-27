@@ -165,6 +165,7 @@ export default function App() {
         >
           <Route index element={<TeachDashboard />} />
           <Route path="courses/:slug" element={<TeachCourse />} />
+          <Route path="courses/:slug/student-view" element={<LearnCourse preview />} />
         </Route>
         <Route path="/help" element={<HelpPage />} />
         <Route path="/contact" element={<ContactPage />} />

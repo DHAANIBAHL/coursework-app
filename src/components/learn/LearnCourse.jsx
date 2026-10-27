@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation, useParams, useSearchParams } from "react-router-dom";
-import { CheckCircle2, Circle, Download, ExternalLink, FileText, Link2, Megaphone, Video } from "lucide-react";
+import { ArrowLeft, CheckCircle2, Circle, Download, ExternalLink, Eye, FileText, Link2, Megaphone, Video } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState, ErrorNote, Loading, PageHeading, Section } from "@/components/panel/Panel";
 import DeadlineStatus from "@/components/learn/DeadlineStatus";
@@ -24,11 +24,13 @@ const tabs = [
 ];
 
 // One course from the student's side: progress plus everything the teacher shares.
-export default function LearnCourse() {
+// With `preview`, teachers and admins see exactly what an enrolled student sees
+// (GET /api/teach/courses/:slug/student-view), read-only.
+export default function LearnCourse({ preview = false }) {
   const { slug } = useParams();
   const [params, setParams] = useSearchParams();
   const course = getCourse(slug);
-  const { data, error, loading, reload } = useApi(`/learn/courses/${slug}`);
+  const { data, error, loading, reload } = useApi(preview ? `/teach/courses/${slug}/student-view` : `/learn/courses/${slug}`);
   const active = tabs.find((t) => t.id === params.get("tab"))?.id ?? "overview";
   const now = useNow();
 
@@ -68,6 +70,21 @@ export default function LearnCourse() {
 
   return (
     <>
+      {preview && (
+        <div className="mb-6 flex flex-wrap items-center gap-3 rounded-xl border border-violet-200 dark:border-violet-900 bg-violet-50 dark:bg-violet-950/50 p-4">
+          <Eye className="size-5 shrink-0 text-violet-700 dark:text-violet-300" />
+          <p className="min-w-0 flex-1 text-sm text-slate-800 dark:text-slate-200">
+            <span className="font-semibold">Student view.</span> This is exactly what an enrolled student sees: posted announcements, published
+            quizzes and tests, and your material. It's read-only, so nothing here is handed in or saved.
+          </p>
+          <Link
+            to={`/teach/courses/${slug}`}
+            className="inline-flex items-center gap-1.5 rounded-md border border-violet-300 dark:border-violet-800 bg-white dark:bg-slate-900 px-3 py-1.5 text-sm font-medium text-violet-700 dark:text-violet-300 transition-colors hover:bg-violet-100 dark:hover:bg-violet-950"
+          >
+            <ArrowLeft className="size-4" /> Back to teaching
+          </Link>
+        </div>
+      )}
       <PageHeading
         title={course.title}
         description={data.teachers.length ? `Taught by ${data.teachers.join(", ")}` : "Self-paced"}
@@ -124,9 +141,9 @@ export default function LearnCourse() {
         {active === "overview" && <Overview slug={slug} course={course} data={data} />}
         {active === "live" && <Live data={data} />}
         {active === "announcements" && <Announcements data={data} />}
-        {active === "quizzes" && <Quizzes slug={slug} course={course} data={data} kind="quiz" />}
-        {active === "tests" && <Quizzes slug={slug} course={course} data={data} kind="test" />}
-        {active === "assignments" && <Assignments data={data} reload={reload} />}
+        {active === "quizzes" && <Quizzes slug={slug} course={course} data={data} kind="quiz" preview={preview} />}
+        {active === "tests" && <Quizzes slug={slug} course={course} data={data} kind="test" preview={preview} />}
+        {active === "assignments" && <Assignments data={data} reload={reload} preview={preview} />}
         {active === "videos" && <Materials data={data} kind="video" />}
         {active === "materials" && <Materials data={data} kind="material" />}
       </div>
@@ -282,7 +299,7 @@ function Announcements({ data }) {
   );
 }
 
-function Assignments({ data, reload }) {
+function Assignments({ data, reload, preview }) {
   const { hash } = useLocation();
   // Links from the dashboard (#assignment-12) scroll to that assignment.
   useEffect(() => {
@@ -299,13 +316,13 @@ function Assignments({ data, reload }) {
   return (
     <div className="space-y-4">
       {data.assignments.map((a) => (
-        <SubmitAssignment key={a.id} assignment={a} onSubmitted={reload} />
+        <SubmitAssignment key={a.id} assignment={a} onSubmitted={reload} preview={preview} />
       ))}
     </div>
   );
 }
 
-function Quizzes({ slug, course, data, kind }) {
+function Quizzes({ slug, course, data, kind, preview }) {
   const now = useNow();
   const isTest = kind === "test";
   const items = data.quizzes.filter((q) => (q.kind ?? "quiz") === kind);
@@ -335,9 +352,18 @@ function Quizzes({ slug, course, data, kind }) {
                   ) : (
                     <DeadlineStatus status={status} />
                   )}
-                  <Link to={`/my-learning/quizzes/${q.id}`} className={buttonVariants({ size: "sm", variant: q.myResult ? "outline" : "default" })}>
-                    {q.myResult ? (isTest ? "View" : "Retake") : isTest ? "Open test" : "Start quiz"}
-                  </Link>
+                  {preview ? (
+                    <span
+                      title="Students start it here. Previews can't take quizzes."
+                      className={`${buttonVariants({ size: "sm", variant: "outline" })} cursor-not-allowed opacity-60`}
+                    >
+                      {isTest ? "Open test" : "Start quiz"}
+                    </span>
+                  ) : (
+                    <Link to={`/my-learning/quizzes/${q.id}`} className={buttonVariants({ size: "sm", variant: q.myResult ? "outline" : "default" })}>
+                      {q.myResult ? (isTest ? "View" : "Retake") : isTest ? "Open test" : "Start quiz"}
+                    </Link>
+                  )}
                 </li>
               );
             })}

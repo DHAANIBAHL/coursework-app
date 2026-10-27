@@ -2,6 +2,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   ClipboardCheck,
   ExternalLink,
+  Eye,
   FileText,
   FlaskConical,
   LayoutGrid,
@@ -139,9 +140,17 @@ export default function TeachCourse() {
         description={data ? `${data.students.length} student${data.students.length === 1 ? "" : "s"} enrolled` : " "}
         action={
           course && (
-            <Link to={`/course/${slug}`} className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
-              View as a student <ExternalLink className="size-3.5" />
-            </Link>
+            <div className="flex flex-wrap items-center gap-3">
+              <Link to={`/course/${slug}`} className="inline-flex items-center gap-1 text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                Course lessons <ExternalLink className="size-3.5" />
+              </Link>
+              <Link
+                to={`/teach/courses/${slug}/student-view`}
+                className="inline-flex items-center gap-1.5 rounded-md border border-violet-300 dark:border-violet-800 bg-violet-50 dark:bg-violet-950/50 px-3 py-1.5 text-sm font-medium text-violet-700 dark:text-violet-300 transition-colors hover:bg-violet-100 dark:hover:bg-violet-950"
+              >
+                <Eye className="size-4" /> Student view
+              </Link>
+            </div>
           )
         }
       />

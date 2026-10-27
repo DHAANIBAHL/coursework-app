@@ -57,9 +57,14 @@ export default function TeachDashboard() {
                         {c.students} student{c.students === 1 ? "" : "s"} · quiz average {percent(c.quizAverage)}
                       </p>
                     </div>
-                    <Link to={`/teach/courses/${c.slug}`} className={linkClass}>
-                      Manage course
-                    </Link>
+                    <div className="flex gap-4">
+                      <Link to={`/teach/courses/${c.slug}/student-view`} className={linkClass}>
+                        Student view
+                      </Link>
+                      <Link to={`/teach/courses/${c.slug}`} className={linkClass}>
+                        Manage course
+                      </Link>
+                    </div>
                   </li>
                 );
               })}

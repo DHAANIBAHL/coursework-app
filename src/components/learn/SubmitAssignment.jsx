@@ -11,7 +11,7 @@ import { useNow } from "@/lib/useNow";
 
 // One assignment: instructions, my submission (text and/or file), and the
 // grade once the teacher has marked it. Resubmitting is allowed until graded.
-export default function SubmitAssignment({ assignment: a, onSubmitted }) {
+export default function SubmitAssignment({ assignment: a, onSubmitted, preview = false }) {
   const sub = a.mySubmission;
   const graded = sub && sub.grade !== null;
   const now = useNow();
@@ -91,7 +91,13 @@ export default function SubmitAssignment({ assignment: a, onSubmitted }) {
           </div>
         )}
 
-        {editing && !graded && (
+        {preview && (
+          <p className="mt-4 rounded-md border border-dashed border-slate-300 dark:border-slate-700 p-4 text-sm text-slate-600 dark:text-slate-400">
+            Students write their answer and attach a file here. Handing in is turned off in the student view.
+          </p>
+        )}
+
+        {editing && !graded && !preview && (
           <form onSubmit={handleSubmit} noValidate className="mt-4 space-y-4">
             <FormError message={formError} />
             {overdue && !sub && (
