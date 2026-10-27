@@ -93,9 +93,9 @@ export default function LandingPage() {
               Read, watch, practise with real code, and check what stuck with a quiz after every section.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/signup" className={buttonVariants({ size: "lg", className: "h-11 px-5 text-base" })}>
+              <Link to="/signup" className={buttonVariants({ size: "lg", className: "group h-11 px-5 text-base" })}>
                 Start learning free
-                <ArrowRight className="size-4" />
+                <ArrowRight className="size-4 transition-transform group-hover:translate-x-0.5" />
               </Link>
               <a href="#courses" className={buttonVariants({ variant: "outline", size: "lg", className: "h-11 px-5 text-base" })}>
                 Browse courses
@@ -118,11 +118,11 @@ export default function LandingPage() {
           </div>
 
           {/* A stack of real course cards as the hero picture */}
-          <div className="relative hidden h-96 md:block" aria-hidden="true">
+          <div className="relative hidden h-96 md:block page-enter" aria-hidden="true">
             {heroCourses.map((course, index) => (
               <div
                 key={course.slug}
-                className="absolute w-72 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl"
+                className="absolute w-72 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl transition duration-300 ease-out hover:z-10 hover:-translate-y-3 hover:shadow-2xl motion-reduce:transition-none"
                 style={{ top: `${index * 3.5}rem`, left: `${index * 4.5}rem`, rotate: `${(index - 1) * 4}deg` }}
               >
                 <img src={course.image} alt="" className="h-32 w-full object-cover" />
@@ -155,8 +155,8 @@ export default function LandingPage() {
           </p>
           <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {features.map(({ icon: Icon, title, text }) => (
-              <div key={title} className="rounded-xl border border-slate-200 dark:border-slate-800 p-6">
-                <span className="flex size-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400">
+              <div key={title} className="lift group rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-6 hover:border-blue-200 dark:hover:border-blue-900">
+                <span className="flex size-10 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 transition-colors duration-200 group-hover:bg-blue-600 group-hover:text-white dark:group-hover:bg-blue-500 dark:group-hover:text-white">
                   <Icon className="size-5" />
                 </span>
                 <h3 className="mt-4 font-semibold text-slate-900 dark:text-slate-100">{title}</h3>
@@ -179,18 +179,20 @@ export default function LandingPage() {
                   key={course.slug}
                   to="/signup"
                   state={{ from: `/course/${course.slug}` }}
-                  className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 transition-shadow hover:shadow-lg focus-visible:outline-2 focus-visible:outline-blue-600"
+                  className="lift group flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-slate-300 dark:hover:border-slate-600 focus-visible:outline-2 focus-visible:outline-blue-600"
                 >
-                  {course.image ? (
-                    <img src={course.image} alt="" className="h-40 w-full object-cover" />
-                  ) : (
-                    <div className={`flex h-40 items-center justify-center ${course.color}`}>
-                      <span className="text-2xl font-semibold text-white">{course.tag}</span>
-                    </div>
-                  )}
+                  <div className="h-40 overflow-hidden">
+                    {course.image ? (
+                      <img src={course.image} alt="" className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none" />
+                    ) : (
+                      <div className={`flex h-full items-center justify-center transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none ${course.color}`}>
+                        <span className="text-2xl font-semibold text-white">{course.tag}</span>
+                      </div>
+                    )}
+                  </div>
                   <div className="flex flex-1 flex-col p-5">
                     <p className="text-xs font-medium text-blue-600 dark:text-blue-400">{course.tag}</p>
-                    <h3 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">{course.title}</h3>
+                    <h3 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{course.title}</h3>
                     <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{course.description}</p>
                     <p className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                       <span>
@@ -213,8 +215,8 @@ export default function LandingPage() {
           <h2 className={sectionTitle}>How it works</h2>
           <ol className="mt-10 grid gap-6 md:grid-cols-3">
             {steps.map((step, index) => (
-              <li key={step.title} className="rounded-xl border border-slate-200 dark:border-slate-800 p-6">
-                <span className="flex size-9 items-center justify-center rounded-full bg-slate-900 dark:bg-slate-100 text-sm font-semibold text-white dark:text-slate-900">
+              <li key={step.title} className="lift group rounded-xl border border-slate-200 dark:border-slate-800 p-6">
+                <span className="flex size-9 items-center justify-center rounded-full bg-slate-900 dark:bg-slate-100 text-sm font-semibold text-white dark:text-slate-900 transition-colors group-hover:bg-blue-600 dark:group-hover:bg-blue-500 dark:group-hover:text-white">
                   {index + 1}
                 </span>
                 <h3 className="mt-4 font-semibold text-slate-900 dark:text-slate-100">{step.title}</h3>
@@ -284,7 +286,7 @@ export default function LandingPage() {
             </p>
             <Link
               to="/signup"
-              className="mt-8 inline-flex h-11 items-center gap-2 rounded-lg bg-white px-5 font-medium text-slate-900 transition-colors hover:bg-slate-100"
+              className="mt-8 inline-flex h-11 items-center gap-2 rounded-lg bg-white px-5 font-medium text-slate-900 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-blue-50 hover:shadow-lg motion-reduce:hover:translate-y-0"
             >
               <UserPlus className="size-4" />
               Create your free account
@@ -300,11 +302,11 @@ export default function LandingPage() {
             builders. © {new Date().getFullYear()}
           </p>
           <nav className="flex flex-wrap gap-x-6 gap-y-2">
-            <a href="#courses" className="hover:text-slate-900 dark:hover:text-white">Courses</a>
-            <Link to="/help" className="hover:text-slate-900 dark:hover:text-white">Help</Link>
-            <Link to="/contact" className="hover:text-slate-900 dark:hover:text-white">Contact us</Link>
-            <Link to="/login" className="hover:text-slate-900 dark:hover:text-white">Log in</Link>
-            <Link to="/signup" className="hover:text-slate-900 dark:hover:text-white">Sign up</Link>
+            <a href="#courses" className="transition-colors hover:text-slate-900 dark:hover:text-white">Courses</a>
+            <Link to="/help" className="transition-colors hover:text-slate-900 dark:hover:text-white">Help</Link>
+            <Link to="/contact" className="transition-colors hover:text-slate-900 dark:hover:text-white">Contact us</Link>
+            <Link to="/login" className="transition-colors hover:text-slate-900 dark:hover:text-white">Log in</Link>
+            <Link to="/signup" className="transition-colors hover:text-slate-900 dark:hover:text-white">Sign up</Link>
           </nav>
         </div>
       </footer>

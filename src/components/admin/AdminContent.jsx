@@ -57,7 +57,7 @@ export default function AdminContent() {
                 <th className="px-5 py-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+            <tbody className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
               {courses.map((c) => {
                 const videos = c.lessons.filter((l) => l.video).length;
                 const questions = c.quizzes.reduce((sum, q) => sum + q.questions.length, 0);

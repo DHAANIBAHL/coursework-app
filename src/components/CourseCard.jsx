@@ -15,21 +15,23 @@ export default function CourseCard({ course }) {
   const { slug, tag, title, description, color, image, lessons, quizzes } = course;
 
   return (
-    <Card className="overflow-hidden pt-0 ring-1 ring-slate-300 dark:ring-slate-700 transition-shadow hover:border-slate-300 dark:hover:border-slate-600 hover:shadow-md">
-      {image ? (
-        <img src={image} alt="" className="h-40 w-full object-cover" />
-      ) : (
-        // No picture yet: show the course's topic on its color instead.
-        <div className={`flex h-40 items-center justify-center px-6 text-center ${color}`}>
-          <span className="text-2xl font-semibold text-white">{tag}</span>
-        </div>
-      )}
+    <Card className="lift group overflow-hidden pt-0 ring-1 ring-slate-300 dark:ring-slate-700 hover:ring-slate-400 dark:hover:ring-slate-500">
+      <div className="h-40 overflow-hidden">
+        {image ? (
+          <img src={image} alt="" className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none" />
+        ) : (
+          // No picture yet: show the course's topic on its color instead.
+          <div className={`flex h-full items-center justify-center px-6 text-center transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none ${color}`}>
+            <span className="text-2xl font-semibold text-white">{tag}</span>
+          </div>
+        )}
+      </div>
 
       <CardHeader>
         <Badge variant="secondary" className="w-fit">
           {tag}
         </Badge>
-        <CardTitle className="text-lg">{title}</CardTitle>
+        <CardTitle className="text-lg transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{title}</CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
 

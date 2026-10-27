@@ -79,7 +79,7 @@ function Quiz({ course, quiz }) {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <Header />
 
-      <main className="mx-auto max-w-3xl px-6 py-12">
+      <main className="page-enter mx-auto max-w-3xl px-6 py-12">
         <Link
           to={`/course/${slug}`}
           className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"

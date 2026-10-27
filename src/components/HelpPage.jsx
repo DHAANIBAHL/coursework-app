@@ -72,7 +72,7 @@ export default function HelpPage() {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <Header />
 
-      <main className="mx-auto max-w-3xl px-6 py-12">
+      <main className="page-enter mx-auto max-w-3xl px-6 py-12">
         <h1 className="text-4xl font-semibold text-slate-900 dark:text-slate-100">Help</h1>
         <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
           Answers to common questions about courses, quizzes, and your account.
@@ -85,9 +85,9 @@ export default function HelpPage() {
               {section.questions.map((item) => (
                 <details
                   key={item.q}
-                  className="group rounded-lg border border-slate-200 dark:border-slate-800 open:border-slate-300 dark:open:border-slate-700 open:shadow-sm"
+                  className="group rounded-lg border border-slate-200 dark:border-slate-800 transition-colors hover:border-slate-300 dark:hover:border-slate-700 open:border-slate-300 dark:open:border-slate-700 open:shadow-sm"
                 >
-                  <summary className="flex cursor-pointer list-none items-center gap-3 p-4 font-medium text-slate-900 dark:text-slate-100 [&::-webkit-details-marker]:hidden">
+                  <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg p-4 font-medium text-slate-900 dark:text-slate-100 transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/60 [&::-webkit-details-marker]:hidden">
                     <span className="flex-1">{item.q}</span>
                     <ChevronDown className="size-4 text-slate-400 dark:text-slate-500 transition-transform group-open:rotate-180" />
                   </summary>

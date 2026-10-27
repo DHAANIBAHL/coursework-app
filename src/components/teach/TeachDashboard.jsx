@@ -36,7 +36,7 @@ export default function TeachDashboard() {
           </div>
 
           <Section title="Your courses">
-            <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+            <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
               {courses.map((c) => {
                 const course = getCourse(c.slug);
                 return (
@@ -61,7 +61,7 @@ export default function TeachDashboard() {
               {upcomingSessions.length === 0 ? (
                 <EmptyState>No live classes scheduled.</EmptyState>
               ) : (
-                <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+                <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                   {upcomingSessions.map((s) => (
                     <li key={s.id} className="flex items-center justify-between gap-4 px-5 py-3">
                       <div className="min-w-0">
@@ -83,7 +83,7 @@ export default function TeachDashboard() {
               {dueSoon.length === 0 ? (
                 <EmptyState>Nothing due soon.</EmptyState>
               ) : (
-                <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+                <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                   {dueSoon.map((a) => (
                     <li key={a.id} className="px-5 py-3">
                       <div className="flex items-center justify-between gap-4">
@@ -110,7 +110,7 @@ export default function TeachDashboard() {
             {recentSubmissions.length === 0 ? (
               <EmptyState>No submissions yet.</EmptyState>
             ) : (
-              <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+              <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {recentSubmissions.map((s) => (
                   <li key={s.id} className="flex flex-wrap items-center justify-between gap-4 px-5 py-3">
                     <div className="min-w-0">

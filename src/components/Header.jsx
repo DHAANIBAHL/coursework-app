@@ -38,9 +38,13 @@ function ThemeButton({ theme, onToggle, className = "" }) {
       onClick={onToggle}
       aria-label={label}
       title={label}
-      className={`rounded-md p-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-blue-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white ${className}`}
+      className={`group rounded-md p-2 text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-blue-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white ${className}`}
     >
-      {theme === "dark" ? <Sun className="size-5" /> : <Moon className="size-5" />}
+      {theme === "dark" ? (
+        <Sun className="size-5 transition-transform duration-300 group-hover:rotate-45 motion-reduce:transition-none" />
+      ) : (
+        <Moon className="size-5 transition-transform duration-300 group-hover:-rotate-12 motion-reduce:transition-none" />
+      )}
     </button>
   );
 }
@@ -172,9 +176,9 @@ export default function Header() {
               aria-expanded={accountOpen}
               aria-haspopup="menu"
               aria-label="Account menu"
-              className="flex items-center gap-1 rounded-full p-1 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-600"
+              className="group/account flex items-center gap-1 rounded-full p-1 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 focus-visible:outline-2 focus-visible:outline-blue-600"
             >
-              <span className="flex size-8 items-center justify-center rounded-full bg-slate-900 dark:bg-slate-700 text-xs font-semibold text-white">
+              <span className="flex size-8 items-center justify-center rounded-full bg-slate-900 dark:bg-slate-700 text-xs font-semibold text-white ring-2 ring-transparent transition group-hover/account:ring-blue-300 dark:group-hover/account:ring-blue-700">
                 {initials}
               </span>
               <ChevronDown

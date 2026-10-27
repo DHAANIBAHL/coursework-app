@@ -23,7 +23,7 @@ export default function StudentsTab({ course, data }) {
                   <th className="px-5 py-3 font-medium">Joined</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+              <tbody className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {data.students.map((s) => {
                   const fraction = totalLessons ? s.lessonsDone / totalLessons : 0;
                   return (
@@ -60,7 +60,7 @@ export default function StudentsTab({ course, data }) {
         {data.builtinQuizResults.length === 0 ? (
           <EmptyState>No one has taken this course's built-in quizzes yet.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {data.builtinQuizResults.map((b) => (
               <li key={b.quizId} className="flex items-center justify-between gap-4 px-5 py-3 text-sm">
                 <span className="font-medium text-slate-900 dark:text-slate-100">{quizTitle(b.quizId)}</span>

@@ -120,7 +120,7 @@ export default function MaterialsTab({ slug, data, reload }) {
         {data.materials.length === 0 ? (
           <EmptyState>Nothing shared yet.</EmptyState>
         ) : (
-          <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+          <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {data.materials.map((m) => {
               const Icon = kindIcons[m.kind];
               return (

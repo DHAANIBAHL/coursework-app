@@ -64,7 +64,7 @@ export default function ContactPage() {
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header />
 
-      <main className="mx-auto max-w-xl px-6 py-12">
+      <main className="page-enter mx-auto max-w-xl px-6 py-12">
         <h1 className="text-4xl font-semibold text-slate-900 dark:text-slate-100">Contact us</h1>
         <p className="mt-3 text-lg text-slate-600 dark:text-slate-400">
           Questions about a course, a quiz that seems wrong, or trouble with your account? Tell us

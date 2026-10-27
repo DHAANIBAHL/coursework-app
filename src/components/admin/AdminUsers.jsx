@@ -140,7 +140,7 @@ export default function AdminUsers() {
                   <th className="px-5 py-3 text-right font-medium">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
+              <tbody className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {data.users.map((u) => (
                   <UserRow key={u.id} u={u} isMe={u.id === me.id} onRole={changeRole} onDelete={remove} onPasswordSet={done} onError={setActionError} />
                 ))}

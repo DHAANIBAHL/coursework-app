@@ -1,4 +1,4 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { AlertCircle, Loader2 } from "lucide-react";
 import Header from "@/components/Header";
 
@@ -8,6 +8,7 @@ import Header from "@/components/Header";
 // `items`: [{ to, label, icon, end }] — `end` makes "/admin" match only itself.
 // `context` is passed to the child page (read it with useOutletContext()).
 export function PanelLayout({ title, items, context, footer }) {
+  const { pathname } = useLocation();
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
       <Header />
@@ -23,7 +24,7 @@ export function PanelLayout({ title, items, context, footer }) {
                 to={to}
                 end={end}
                 className={({ isActive }) =>
-                  `flex shrink-0 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
+                  `flex shrink-0 items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition duration-150 md:hover:translate-x-0.5 motion-reduce:md:hover:translate-x-0 ${
                     isActive
                       ? "bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm ring-1 ring-slate-200 dark:ring-slate-800"
                       : "text-slate-600 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white"
@@ -38,7 +39,9 @@ export function PanelLayout({ title, items, context, footer }) {
           {footer}
         </aside>
         <main className="min-w-0 flex-1">
-          <Outlet context={context} />
+          <div key={pathname} className="page-enter">
+            <Outlet context={context} />
+          </div>
         </main>
       </div>
     </div>
@@ -60,10 +63,14 @@ export function PageHeading({ title, description, action }) {
 // A number with a label, e.g. "Students 42". `hint` is a small line under it.
 export function StatCard({ label, value, hint, icon: Icon }) {
   return (
-    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+    <div className="group rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 transition duration-200 hover:border-blue-200 dark:hover:border-blue-900 hover:shadow-md hover:shadow-slate-900/5 dark:hover:shadow-black/30">
       <div className="flex items-center justify-between">
         <p className="text-sm font-medium text-slate-500 dark:text-slate-400">{label}</p>
-        {Icon && <Icon className="size-4 text-slate-400 dark:text-slate-500" />}
+        {Icon && (
+          <span className="flex size-8 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 transition-colors group-hover:bg-blue-600 group-hover:text-white dark:group-hover:bg-blue-500">
+            <Icon className="size-4" />
+          </span>
+        )}
       </div>
       <p className="mt-2 text-3xl font-semibold text-slate-900 dark:text-slate-100">{value}</p>
       {hint && <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{hint}</p>}
@@ -74,7 +81,7 @@ export function StatCard({ label, value, hint, icon: Icon }) {
 // A white box with an optional title row, for grouping content on a panel page.
 export function Section({ title, action, children, className = "" }) {
   return (
-    <section className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 ${className}`}>
+    <section className={`rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-900/5 dark:shadow-none ${className}`}>
       {(title || action) && (
         <div className="flex items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 px-5 py-3">
           <h2 className="font-semibold text-slate-900 dark:text-slate-100">{title}</h2>

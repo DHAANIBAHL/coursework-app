@@ -40,7 +40,7 @@ export default function AdminOverview() {
               {data.recentUsers.length === 0 ? (
                 <EmptyState>No accounts yet.</EmptyState>
               ) : (
-                <ul className="divide-y divide-slate-200 dark:divide-slate-800">
+                <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                   {data.recentUsers.map((u) => (
                     <li key={u.id} className="flex items-center justify-between gap-4 px-5 py-3">
                       <div className="min-w-0">

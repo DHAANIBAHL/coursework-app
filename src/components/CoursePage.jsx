@@ -47,7 +47,7 @@ export default function CoursePage() {
     <div className="min-h-screen bg-white dark:bg-slate-950">
       <Header />
 
-      <main className="mx-auto max-w-3xl px-6 py-12">
+      <main className="page-enter mx-auto max-w-3xl px-6 py-12">
         <Link
           to="/courses"
           className="inline-flex items-center gap-2 rounded-md border border-slate-200 dark:border-slate-800 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 transition-colors hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
@@ -78,9 +78,9 @@ export default function CoursePage() {
               <details
                 key={lesson.title}
                 id={`lesson-${index + 1}`}
-                className="group scroll-mt-24 rounded-lg border border-slate-200 dark:border-slate-800 open:border-slate-300 dark:open:border-slate-700 open:shadow-sm"
+                className="group scroll-mt-24 rounded-lg border border-slate-200 dark:border-slate-800 transition-colors hover:border-slate-300 dark:hover:border-slate-700 open:border-slate-300 dark:open:border-slate-700 open:shadow-sm"
               >
-                <summary className="flex cursor-pointer list-none items-center gap-3 p-4 font-medium text-slate-900 dark:text-slate-100 [&::-webkit-details-marker]:hidden">
+                <summary className="flex cursor-pointer list-none items-center gap-3 rounded-lg p-4 font-medium text-slate-900 dark:text-slate-100 transition-colors hover:bg-slate-50 dark:hover:bg-slate-900/60 [&::-webkit-details-marker]:hidden">
                   <span className="text-sm text-blue-600 dark:text-blue-400">Lesson {index + 1}</span>
                   <span className="flex-1">{lesson.title}</span>
                   {enrollment.completed.has(index) && (
