@@ -3,6 +3,8 @@ import { BarChart3, BookOpen, CalendarClock, CheckCircle2, Megaphone, Video } fr
 import { buttonVariants } from "@/components/ui/button";
 import { EmptyState, ErrorNote, Loading, PageHeading, Section, StatCard } from "@/components/panel/Panel";
 import DeadlineStatus from "@/components/learn/DeadlineStatus";
+import { CategoryChip, PinnedChip } from "@/components/panel/CategoryChip";
+import { relatedLinkForStudent } from "@/lib/announcements";
 import { useAuth } from "@/context/AuthContext";
 import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
@@ -183,13 +185,25 @@ export default function LearnDashboard() {
               <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {announcements.map((a) => (
                   <li key={a.id} className="px-5 py-3">
-                    <p className="flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-100">
-                      <Megaphone className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
-                      {a.title}
-                    </p>
+                    <div className="flex flex-wrap items-center gap-2">
+                      <p className="flex items-center gap-2 text-sm font-medium text-slate-900 dark:text-slate-100">
+                        <Megaphone className="size-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                        {a.title}
+                      </p>
+                      <CategoryChip announcement={a} />
+                      {a.pinned && <PinnedChip />}
+                    </div>
                     <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-400">{a.body}</p>
                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                      {getCourse(a.courseSlug)?.title} · {a.authorName ?? "Teacher"} · {relativeTime(a.createdAt)}
+                      {getCourse(a.courseSlug)?.title} · {a.authorName ?? "Teacher"} · {relativeTime(a.publishAt ?? a.createdAt)}
+                      {relatedLinkForStudent(a) && (
+                        <>
+                          {" · "}
+                          <Link to={relatedLinkForStudent(a)} className="font-medium text-blue-600 dark:text-blue-400 hover:underline">
+                            Open {a.related.title ?? "it"}
+                          </Link>
+                        </>
+                      )}
                     </p>
                   </li>
                 ))}
