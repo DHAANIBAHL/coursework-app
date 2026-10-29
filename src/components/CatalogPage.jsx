@@ -1,11 +1,15 @@
 import Header from "@/components/Header";
 import CourseCard from "@/components/CourseCard";
-import { courses } from "@/data/courses";
+import { ErrorNote, Loading } from "@/components/panel/Panel";
+import { useApi } from "@/lib/api";
 
 export default function CatalogPage() {
-  // Counts real lessons and quizzes from the course data, so this grows as you add content.
-  const totalLessons = courses.reduce((sum, c) => sum + c.lessons.length, 0);
-  const totalQuizzes = courses.reduce((sum, c) => sum + c.quizzes.length, 0);
+  // The catalog comes from the server (GET /api/courses), with lesson and
+  // quiz counts worked out by the database.
+  const { data, error, loading, reload } = useApi("/courses");
+  const courses = data?.courses ?? [];
+  const totalLessons = courses.reduce((sum, c) => sum + c.lessonCount, 0);
+  const totalQuizzes = courses.reduce((sum, c) => sum + c.quizCount, 0);
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
@@ -13,7 +17,7 @@ export default function CatalogPage() {
 
       <section className="page-enter max-w-6xl mx-auto px-6 py-16">
         <h1 className="text-4xl font-bold max-w-xl mb-4">
-          {courses.length} courses. {totalLessons} lessons. {totalQuizzes} quizzes.
+          {data ? `${courses.length} courses. ${totalLessons} lessons. ${totalQuizzes} quizzes.` : "Courses"}
         </h1>
         <p className="text-slate-600 dark:text-slate-400 max-w-xl">
           Short, practical courses on building for the web - work through the
@@ -21,10 +25,18 @@ export default function CatalogPage() {
         </p>
       </section>
 
-      <section className="page-enter max-w-6xl mx-auto px-6 pb-20 grid grid-cols-1 md:grid-cols-3 gap-6 [animation-delay:80ms]">
-        {courses.map((course) => (
-          <CourseCard key={course.slug} course={course} />
-        ))}
+      <section className="page-enter max-w-6xl mx-auto px-6 pb-20 [animation-delay:80ms]">
+        {loading && !data ? (
+          <Loading />
+        ) : error ? (
+          <ErrorNote error={error} onRetry={reload} />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {courses.map((course) => (
+              <CourseCard key={course.slug} course={course} />
+            ))}
+          </div>
+        )}
       </section>
     </div>
   );
