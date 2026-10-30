@@ -13,14 +13,13 @@ import {
   UserPlus,
 } from "lucide-react";
 import Header from "@/components/Header";
+import { ErrorNote, Loading } from "@/components/panel/Panel";
 import { buttonVariants } from "@/components/ui/button";
-import { courses } from "@/data/courses";
+import { useApi } from "@/lib/api";
 
 // Public homepage for visitors who aren't logged in. Every number and course
-// shown here comes from the course data, so it stays accurate as content grows.
-const totalLessons = courses.reduce((sum, c) => sum + c.lessons.length, 0);
-const totalQuizzes = courses.reduce((sum, c) => sum + c.quizzes.length, 0);
-const topics = [...new Set(courses.map((c) => c.tag))];
+// shown here comes from the catalog (GET /api/courses, no login needed), so it
+// stays accurate as content grows.
 
 const features = [
   {
@@ -55,11 +54,18 @@ const features = [
   },
 ];
 
-const steps = [
-  { title: "Create a free account", text: "Sign up with your name and email. It takes under a minute." },
-  { title: "Pick a course", text: `Choose from ${courses.length} courses across ${topics.length} topics, and start wherever you like.` },
-  { title: "Learn and check yourself", text: "Work through the lessons in order, then take the quiz at the end of each section." },
-];
+function howItWorks(courseCount, topicCount) {
+  return [
+    { title: "Create a free account", text: "Sign up with your name and email. It takes under a minute." },
+    {
+      title: "Pick a course",
+      text: courseCount
+        ? `Choose from ${courseCount} courses across ${topicCount} topics, and start wherever you like.`
+        : "Choose a course and start wherever you like.",
+    },
+    { title: "Learn and check yourself", text: "Work through the lessons in order, then take the quiz at the end of each section." },
+  ];
+}
 
 const faqs = [
   { q: "Is it really free?", a: "Yes. Every course, lesson, and quiz is free with an account." },
@@ -71,7 +77,13 @@ const sectionTitle = "text-3xl font-semibold tracking-tight text-slate-900 dark:
 const sectionLead = "mt-3 max-w-2xl text-lg text-slate-600 dark:text-slate-400";
 
 export default function LandingPage() {
-  const heroCourses = courses.filter((c) => c.image).slice(0, 3);
+  const { data, error, reload } = useApi("/courses");
+  const courses = data?.courses ?? [];
+  const totalLessons = courses.reduce((sum, c) => sum + c.lessonCount, 0);
+  const totalQuizzes = courses.reduce((sum, c) => sum + c.quizCount, 0);
+  const topics = [...new Set(courses.map((c) => c.category))];
+  const heroCourses = courses.filter((c) => c.imageUrl).slice(0, 3);
+  const steps = howItWorks(courses.length, topics.length);
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950">
@@ -110,7 +122,7 @@ export default function LandingPage() {
               ].map(([value, label]) => (
                 <div key={label}>
                   <dt className="sr-only">{label}</dt>
-                  <dd className="text-3xl font-semibold text-slate-900 dark:text-slate-100">{value}</dd>
+                  <dd className="text-3xl font-semibold text-slate-900 dark:text-slate-100">{data ? value : "–"}</dd>
                   <p className="text-sm text-slate-500 dark:text-slate-400">{label}</p>
                 </div>
               ))}
@@ -125,12 +137,12 @@ export default function LandingPage() {
                 className="absolute w-72 overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl transition duration-300 ease-out hover:z-10 hover:-translate-y-3 hover:shadow-2xl motion-reduce:transition-none"
                 style={{ top: `${index * 3.5}rem`, left: `${index * 4.5}rem`, rotate: `${(index - 1) * 4}deg` }}
               >
-                <img src={course.image} alt="" className="h-32 w-full object-cover" />
+                <img src={course.imageUrl} alt="" className="h-32 w-full object-cover" />
                 <div className="p-4">
-                  <p className="text-xs font-medium text-blue-600 dark:text-blue-400">{course.tag}</p>
+                  <p className="text-xs font-medium text-blue-600 dark:text-blue-400">{course.category}</p>
                   <p className="mt-1 font-semibold text-slate-900 dark:text-slate-100">{course.title}</p>
                   <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                    {course.lessons.length} lessons · {course.quizzes.length} quizzes
+                    {course.lessonCount} lessons · {course.quizCount} quizzes
                   </p>
                 </div>
               </div>
@@ -169,11 +181,14 @@ export default function LandingPage() {
         {/* Course catalogue */}
         <section id="courses" className="scroll-mt-20 bg-slate-50 dark:bg-slate-900">
           <div className="mx-auto max-w-6xl px-6 py-20">
-            <h2 className={sectionTitle}>{courses.length} courses, all free</h2>
+            <h2 className={sectionTitle}>{data ? `${courses.length} courses, all free` : "Courses, all free"}</h2>
             <p className={sectionLead}>
               Pick one to start. Create an account and you'll go straight to the course.
             </p>
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {!data && (
+              <div className="mt-10">{error ? <ErrorNote error={error} onRetry={reload} /> : <Loading />}</div>
+            )}
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 empty:hidden">
               {courses.map((course) => (
                 <Link
                   key={course.slug}
@@ -182,21 +197,21 @@ export default function LandingPage() {
                   className="lift group flex flex-col overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 hover:border-slate-300 dark:hover:border-slate-600 focus-visible:outline-2 focus-visible:outline-blue-600"
                 >
                   <div className="h-40 overflow-hidden">
-                    {course.image ? (
-                      <img src={course.image} alt="" className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none" />
+                    {course.imageUrl ? (
+                      <img src={course.imageUrl} alt="" className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none" />
                     ) : (
                       <div className={`flex h-full items-center justify-center transition-transform duration-500 ease-out group-hover:scale-105 motion-reduce:transition-none ${course.color}`}>
-                        <span className="text-2xl font-semibold text-white">{course.tag}</span>
+                        <span className="text-2xl font-semibold text-white">{course.category}</span>
                       </div>
                     )}
                   </div>
                   <div className="flex flex-1 flex-col p-5">
-                    <p className="text-xs font-medium text-blue-600 dark:text-blue-400">{course.tag}</p>
+                    <p className="text-xs font-medium text-blue-600 dark:text-blue-400">{course.category}</p>
                     <h3 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">{course.title}</h3>
                     <p className="mt-2 flex-1 text-sm text-slate-600 dark:text-slate-400">{course.description}</p>
                     <p className="mt-4 flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
                       <span>
-                        {course.lessons.length} lessons · {course.quizzes.length} quizzes
+                        {course.lessonCount} lessons · {course.quizCount} quizzes
                       </span>
                       <span className="inline-flex items-center gap-1 font-medium text-blue-600 dark:text-blue-400">
                         Start
