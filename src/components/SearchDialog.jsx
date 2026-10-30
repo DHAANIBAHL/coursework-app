@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { BookOpen, FileText, ListChecks, Search, X } from "lucide-react";
-import { search } from "@/lib/search";
+import { api } from "@/lib/api";
 
 const typeIcons = { course: BookOpen, lesson: FileText, quiz: ListChecks };
 const typeLabels = { course: "Course", lesson: "Lesson", quiz: "Quiz" };
 
-// Full-screen search over every course, lesson, and quiz.
+// Full-screen search over every course, lesson, and quiz (GET /api/search).
 // Render it only while open, so it starts empty each time. It is drawn
 // straight into <body> because the header's blur effect would otherwise
 // trap the full-screen overlay inside the header.
@@ -17,7 +17,28 @@ export default function SearchDialog({ onClose }) {
   const [query, setQuery] = useState("");
   const [active, setActive] = useState(0);
 
-  const results = search(query);
+  // The latest answer from the server, and which query it was for.
+  const [found, setFound] = useState({ query: "", results: [], error: null });
+  const trimmed = query.trim();
+
+  // Ask the server once typing pauses. While a new answer is on its way the
+  // previous results stay up, so the list doesn't flicker.
+  useEffect(() => {
+    if (!trimmed) return;
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      api(`/search?q=${encodeURIComponent(trimmed)}`)
+        .then((data) => !cancelled && setFound({ query: trimmed, results: data.results, error: null }))
+        .catch((error) => !cancelled && setFound({ query: trimmed, results: [], error }));
+    }, 120);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [trimmed]);
+
+  const settled = found.query === trimmed;
+  const results = trimmed ? found.results : [];
 
   // Focus the box on open, and stop the page behind from scrolling.
   useEffect(() => {
@@ -97,13 +118,17 @@ export default function SearchDialog({ onClose }) {
           </button>
         </div>
 
-        {query.trim() === "" ? (
+        {trimmed === "" ? (
           <p className="px-4 py-6 text-sm text-slate-500 dark:text-slate-400">
             Try "flexbox", "closures", "joins", or "gradient descent".
           </p>
+        ) : settled && found.error ? (
+          <p role="alert" className="px-4 py-6 text-sm text-red-600 dark:text-red-400">
+            Search isn't available right now. {found.error.message}
+          </p>
         ) : results.length === 0 ? (
           <p className="px-4 py-6 text-sm text-slate-500 dark:text-slate-400">
-            No matches for "{query.trim()}". Try a shorter or different word.
+            {settled ? <>No matches for "{trimmed}". Try a shorter or different word.</> : "Searching…"}
           </p>
         ) : (
           <ul id="search-results" role="listbox" className="max-h-[60vh] overflow-y-auto p-2">
