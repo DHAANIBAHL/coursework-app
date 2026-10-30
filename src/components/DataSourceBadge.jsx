@@ -5,7 +5,7 @@ import { hardcodedDataLoaded, useCatalogRequests } from "@/lib/dataSource";
 
 // Development only (App renders it under import.meta.env.DEV): a corner badge
 // saying where this page's course data came from. Green when it came from the
-// catalog API, red when any code has loaded the hardcoded src/data/ files.
+// catalog API, red if any code has loaded hardcoded course data.
 // Click it to list the catalog requests this page made.
 export default function DataSourceBadge() {
   const { pathname } = useLocation();
@@ -25,7 +25,7 @@ export default function DataSourceBadge() {
         <div className="mb-2 rounded-md border border-slate-200 bg-white p-3 text-slate-700 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
           {hardcoded && (
             <p className="mb-2 text-red-700 dark:text-red-300">
-              src/data/courses.js was loaded. Some code still imports it; <code>npm run lint</code> names the file.
+              Hardcoded course data was loaded. Some code still imports it; <code>npm run lint</code> names the file.
             </p>
           )}
           <p className="font-medium text-slate-900 dark:text-slate-100">Catalog requests on this page</p>

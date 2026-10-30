@@ -3,8 +3,9 @@ import { useSyncExternalStore } from "react";
 // Development-only record of where course data comes from, shown by
 // DataSourceBadge. Nothing is recorded in production builds.
 
-// Set by src/data/courses.js when it is loaded. Every page is bundled
-// together, so this means some code in the app still imports hardcoded data.
+// Set by any module holding hardcoded course data (the old src/data/courses.js
+// did; nothing does now). Every page is bundled together, so this means some
+// code in the app still imports hardcoded data.
 export const hardcodedDataLoaded = () => Boolean(globalThis.__courseworkHardcodedData);
 
 let requests = []; // { page, label }, newest last
