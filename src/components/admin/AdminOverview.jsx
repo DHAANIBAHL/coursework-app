@@ -5,6 +5,7 @@ import { useApi } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 import { ROLE_LABELS } from "@/lib/roles";
 import { useCatalog } from "@/lib/catalog";
+import DataSourceStatus from "@/components/admin/DataSourceStatus";
 
 export default function AdminOverview() {
   const { data, error, loading, reload } = useApi("/admin/stats");
@@ -104,6 +105,9 @@ export default function AdminOverview() {
           </div>
         </div>
       ) : null}
+      <div className="mt-6">
+        <DataSourceStatus />
+      </div>
     </>
   );
 }

@@ -18,4 +18,17 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // Course content comes from the catalog API, not the hardcoded files.
+    files: ['src/**/*.{js,jsx}'],
+    ignores: ['src/data/**'],
+    rules: {
+      'no-restricted-imports': ['error', {
+        patterns: [{
+          group: ['@/data/*', '**/data/courses', '**/data/courses.js', '**/data/course-content/*'],
+          message: 'Course content comes from the catalog API: use useCatalog() or useCourse() from @/lib/catalog, not src/data/.',
+        }],
+      }],
+    },
+  },
 ])
