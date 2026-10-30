@@ -2,7 +2,7 @@
 
 Course content (13 courses, 228 lessons, 39 built-in quizzes, 293 questions) is hardcoded in `src/data/`, while everything people do is already in 14 MySQL tables keyed to courses by a text slug. This document lists where every piece of displayed content comes from today, then proposes a relational model that moves the course catalog into MySQL and replaces the slug and text-key links with real foreign keys.
 
-Status: proposal. The app still runs on the current schema. [`database/schema.sql`](../database/schema.sql) builds this model in a new, empty database (`mysql -u root -p learning_platform < database/schema.sql`), and [`database/seed.sql`](../database/seed.sql) fills it with mock data (10 courses, 41 modules, 180 lessons, 5 instructors, 20 students, enrollments, progress, quiz attempts and reviews).
+Status: proposal. The app still runs on the current schema. [`database/schema.sql`](../database/schema.sql) builds this model in a new, empty database (`mysql -u root -p learning_platform < database/schema.sql`), and [`database/seed.sql`](../database/seed.sql) fills it with mock data (all 13 courses, 52 modules, 228 lessons, 5 instructors, 20 students, enrollments, progress, quiz attempts and reviews).
 
 ## 1. Pages and what they display
 
