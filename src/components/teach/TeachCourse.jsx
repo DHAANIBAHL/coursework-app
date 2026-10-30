@@ -14,8 +14,8 @@ import {
 } from "lucide-react";
 import { ErrorNote, Loading, PageHeading } from "@/components/panel/Panel";
 import SectionMenu from "@/components/panel/SectionMenu";
-import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
+import { useCourse } from "@/lib/catalog";
 import GoLive from "@/components/teach/GoLive";
 import StudentsTab from "@/components/teach/StudentsTab";
 import MaterialsTab from "@/components/teach/MaterialsTab";
@@ -129,7 +129,8 @@ const aliases = { sessions: "live" };
 export default function TeachCourse() {
   const { slug } = useParams();
   const [params, setParams] = useSearchParams();
-  const course = getCourse(slug);
+  // The catalog course (title, lessons, quizzes) for the heading and the sections that need it.
+  const { course } = useCourse(slug);
   const { data, error, loading, reload } = useApi(`/teach/courses/${slug}`);
   const requested = aliases[params.get("tab")] ?? params.get("tab");
   const active = sections.find((s) => s.id === requested) ?? null; // null = overview

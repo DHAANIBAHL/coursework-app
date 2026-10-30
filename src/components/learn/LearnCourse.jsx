@@ -7,8 +7,8 @@ import DeadlineStatus from "@/components/learn/DeadlineStatus";
 import { CategoryChip, PinnedChip } from "@/components/panel/CategoryChip";
 import { relatedLinkForStudent } from "@/lib/announcements";
 import SubmitAssignment from "@/components/learn/SubmitAssignment";
-import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
+import { useCourse } from "@/lib/catalog";
 import { fileSize, formatDate, percent, plural, relativeTime } from "@/lib/format";
 import { useNow } from "@/lib/useNow";
 
@@ -29,13 +29,15 @@ const tabs = [
 export default function LearnCourse({ preview = false }) {
   const { slug } = useParams();
   const [params, setParams] = useSearchParams();
-  const course = getCourse(slug);
+  const catalog = useCourse(slug);
+  const { course } = catalog;
   const { data, error, loading, reload } = useApi(preview ? `/teach/courses/${slug}/student-view` : `/learn/courses/${slug}`);
   const active = tabs.find((t) => t.id === params.get("tab"))?.id ?? "overview";
   const now = useNow();
 
-  if (!course) return <ErrorNote error={new Error("There's no course at this address.")} />;
-  if (loading && !data) return <Loading />;
+  if (catalog.error?.code === "COURSE_NOT_FOUND") return <ErrorNote error={new Error("There's no course at this address.")} />;
+  if (catalog.error) return <ErrorNote error={catalog.error} onRetry={catalog.reload} />;
+  if (!course || (loading && !data)) return <Loading />;
   if (error) return <ErrorNote error={error} onRetry={reload} />;
 
   if (!data.enrolled) {
@@ -164,7 +166,7 @@ function Overview({ slug, course, data }) {
         </div>
         <ol className="grid gap-x-6 gap-y-1 p-5 sm:grid-cols-2">
           {course.lessons.map((lesson, i) => (
-            <li key={lesson.title}>
+            <li key={lesson.id}>
               <Link
                 to={`/course/${slug}#lesson-${i + 1}`}
                 className="flex items-center gap-2 rounded-md px-2 py-1.5 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
@@ -186,16 +188,16 @@ function Overview({ slug, course, data }) {
       <Section title="Course quizzes">
         <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
           {course.quizzes.map((q) => {
-            const result = data.builtinQuizResults[q.id];
+            const result = data.builtinQuizResults[q.slug];
             return (
-              <li key={q.id} className="flex items-center justify-between gap-4 px-5 py-3">
+              <li key={q.slug} className="flex items-center justify-between gap-4 px-5 py-3">
                 <div className="min-w-0">
                   <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{q.title}</p>
                   <p className="text-xs text-slate-500 dark:text-slate-400">
                     {result ? `Best score ${result.best}/${result.total} · ${result.attempts} attempt${result.attempts === 1 ? "" : "s"}` : "Not taken yet"}
                   </p>
                 </div>
-                <Link to={`/course/${slug}/quiz/${q.id}`} className={buttonVariants({ size: "sm", variant: result ? "outline" : "default" })}>
+                <Link to={`/course/${slug}/quiz/${q.slug}`} className={buttonVariants({ size: "sm", variant: result ? "outline" : "default" })}>
                   {result ? "Retake" : "Take quiz"}
                 </Link>
               </li>

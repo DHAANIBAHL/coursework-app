@@ -3,8 +3,8 @@ import { Link, useParams } from "react-router-dom";
 import { CircleCheck, CircleX, Clock, FlaskConical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorNote, Loading, PageHeading, Section } from "@/components/panel/Panel";
-import { getCourse } from "@/data/courses";
 import { api, useApi } from "@/lib/api";
+import { useCatalog } from "@/lib/catalog";
 import { formatDate, plural } from "@/lib/format";
 import { useNow } from "@/lib/useNow";
 
@@ -14,6 +14,7 @@ import { useNow } from "@/lib/useNow";
 export default function ClassQuiz() {
   const { id } = useParams();
   const { data, error, loading, reload } = useApi(`/learn/quizzes/${id}`);
+  const catalog = useCatalog();
   const [started, setStarted] = useState(null); // { quiz, session } after pressing Start
   const [answers, setAnswers] = useState({});
   const [result, setResult] = useState(null);
@@ -79,7 +80,7 @@ export default function ClassQuiz() {
   if (loading && !data) return <Loading />;
   if (error) return <ErrorNote error={error} onRetry={reload} />;
 
-  const course = getCourse(quiz.courseSlug);
+  const course = catalog.courseBySlug(quiz.courseSlug);
   const { attempts, attemptsLeft } = data;
   const best = attempts.length ? Math.max(...attempts.map((a) => a.score)) : null;
   const noAttemptsLeft = attemptsLeft === 0 && !session;

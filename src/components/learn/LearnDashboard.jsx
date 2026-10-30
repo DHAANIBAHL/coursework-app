@@ -6,8 +6,8 @@ import DeadlineStatus from "@/components/learn/DeadlineStatus";
 import { CategoryChip, PinnedChip } from "@/components/panel/CategoryChip";
 import { relatedLinkForStudent } from "@/lib/announcements";
 import { useAuth } from "@/context/AuthContext";
-import { getCourse } from "@/data/courses";
 import { useApi } from "@/lib/api";
+import { useCatalog } from "@/lib/catalog";
 import { formatDate, percent, relativeTime } from "@/lib/format";
 import { nextLessonIndex } from "@/lib/learning";
 import { useNow } from "@/lib/useNow";
@@ -20,10 +20,11 @@ export default function LearnDashboard() {
   const dashboard = useApi("/learn/dashboard");
   const enrollments = useApi("/learn/enrollments");
   const now = useNow();
+  const catalog = useCatalog();
 
   const loading = (dashboard.loading && !dashboard.data) || (enrollments.loading && !enrollments.data);
-  if (loading) return <Loading />;
-  const error = dashboard.error ?? enrollments.error;
+  if (loading || catalog.loading) return <Loading />;
+  const error = dashboard.error ?? enrollments.error ?? catalog.error;
   if (error) {
     return (
       <ErrorNote
@@ -31,13 +32,15 @@ export default function LearnDashboard() {
         onRetry={() => {
           dashboard.reload();
           enrollments.reload();
+          catalog.reload();
         }}
       />
     );
   }
 
   const { stats, deadlines, sessions, announcements, recentGrades } = dashboard.data;
-  const courses = enrollments.data.enrollments.filter((e) => getCourse(e.slug));
+  const courses = enrollments.data.enrollments.filter((e) => catalog.courseBySlug(e.slug));
+  const titleOf = (slug) => catalog.courseBySlug(slug)?.title ?? slug;
   const open = deadlines.filter((d) => d.status === "todo" || d.status === "overdue");
   const done = deadlines.filter((d) => d.status === "submitted" || d.status === "graded");
   const firstName = user.name.split(" ")[0];
@@ -77,15 +80,15 @@ export default function LearnDashboard() {
         <Section title="Continue learning">
           <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
             {courses.map((e) => {
-              const course = getCourse(e.slug);
-              const total = course.lessons.length;
+              const course = catalog.courseBySlug(e.slug);
+              const total = course.lessonCount;
               const completed = new Set(e.completedLessons ?? []);
               const next = nextLessonIndex(total, completed);
               const finished = completed.size >= total;
               return (
                 <li key={e.slug} className="flex flex-wrap items-center gap-4 px-5 py-4">
-                  {course.image ? (
-                    <img src={course.image} alt="" className="hidden h-14 w-20 rounded-md object-cover sm:block" />
+                  {course.imageUrl ? (
+                    <img src={course.imageUrl} alt="" className="hidden h-14 w-20 rounded-md object-cover sm:block" />
                   ) : (
                     <div className={`hidden h-14 w-20 rounded-md sm:block ${course.color}`} />
                   )}
@@ -121,7 +124,7 @@ export default function LearnDashboard() {
             ) : (
               <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                 {open.map((d) => (
-                  <DeadlineRow key={`${d.type}-${d.id}`} d={d} />
+                  <DeadlineRow titleOf={titleOf} key={`${d.type}-${d.id}`} d={d} />
                 ))}
               </ul>
             )}
@@ -132,7 +135,7 @@ export default function LearnDashboard() {
                 </summary>
                 <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
                   {done.map((d) => (
-                    <DeadlineRow key={`${d.type}-${d.id}`} d={d} />
+                    <DeadlineRow titleOf={titleOf} key={`${d.type}-${d.id}`} d={d} />
                   ))}
                 </ul>
               </details>
@@ -158,7 +161,7 @@ export default function LearnDashboard() {
                           )}
                         </p>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          {getCourse(s.courseSlug)?.title} · {formatDate(s.startsAt, true)} ({relativeTime(s.startsAt)})
+                          {titleOf(s.courseSlug)} · {formatDate(s.startsAt, true)} ({relativeTime(s.startsAt)})
                         </p>
                       </div>
                       <a
@@ -195,7 +198,7 @@ export default function LearnDashboard() {
                     </div>
                     <p className="mt-1 line-clamp-3 whitespace-pre-wrap text-sm text-slate-600 dark:text-slate-400">{a.body}</p>
                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                      {getCourse(a.courseSlug)?.title} · {a.authorName ?? "Teacher"} · {relativeTime(a.publishAt ?? a.createdAt)}
+                      {titleOf(a.courseSlug)} · {a.authorName ?? "Teacher"} · {relativeTime(a.publishAt ?? a.createdAt)}
                       {relatedLinkForStudent(a) && (
                         <>
                           {" · "}
@@ -225,7 +228,7 @@ export default function LearnDashboard() {
                       </p>
                     </div>
                     {g.feedback && <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">"{g.feedback}"</p>}
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{getCourse(g.courseSlug)?.title}</p>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">{titleOf(g.courseSlug)}</p>
                   </li>
                 ))}
               </ul>
@@ -237,7 +240,7 @@ export default function LearnDashboard() {
   );
 }
 
-function DeadlineRow({ d }) {
+function DeadlineRow({ d, titleOf }) {
   const to =
     d.type === "quiz" || d.type === "test"
       ? `/my-learning/quizzes/${d.id}`
@@ -250,7 +253,7 @@ function DeadlineRow({ d }) {
             {d.title} <span className="font-normal text-slate-500 dark:text-slate-400">· {{ quiz: "Quiz", test: "Test" }[d.type] ?? "Assignment"}</span>
           </p>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            {getCourse(d.courseSlug)?.title} · due {formatDate(d.dueAt, true)} ({relativeTime(d.dueAt)})
+            {titleOf(d.courseSlug)} · due {formatDate(d.dueAt, true)} ({relativeTime(d.dueAt)})
           </p>
         </div>
         <DeadlineStatus status={d.status} />
