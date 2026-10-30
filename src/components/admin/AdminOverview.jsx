@@ -4,14 +4,14 @@ import { EmptyState, ErrorNote, Loading, PageHeading, Section, StatCard } from "
 import { useApi } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 import { ROLE_LABELS } from "@/lib/roles";
-import { courses } from "@/data/courses";
-
-const totalLessons = courses.reduce((sum, c) => sum + c.lessons.length, 0);
-const totalQuizzes = courses.reduce((sum, c) => sum + c.quizzes.length, 0);
-const totalVideos = courses.reduce((sum, c) => sum + c.lessons.filter((l) => l.video).length, 0);
+import { useCatalog } from "@/lib/catalog";
 
 export default function AdminOverview() {
   const { data, error, loading, reload } = useApi("/admin/stats");
+  const catalog = useCatalog();
+  const { courses } = catalog;
+  const sum = (key) => courses.reduce((total, c) => total + c[key], 0);
+  const shown = (value) => (catalog.loading || catalog.error ? "–" : value);
 
   return (
     <>
@@ -85,10 +85,10 @@ export default function AdminOverview() {
               >
                 <dl className="grid grid-cols-2 gap-4 px-5 py-4 text-sm sm:grid-cols-4">
                   {[
-                    ["Courses", courses.length],
-                    ["Lessons", totalLessons],
-                    ["Quizzes", totalQuizzes],
-                    ["Videos", totalVideos],
+                    ["Courses", shown(courses.length)],
+                    ["Lessons", shown(sum("lessonCount"))],
+                    ["Quizzes", shown(sum("quizCount"))],
+                    ["Videos", shown(sum("videoCount"))],
                   ].map(([label, value]) => (
                     <div key={label}>
                       <dt className="text-slate-500 dark:text-slate-400">{label}</dt>
@@ -97,7 +97,7 @@ export default function AdminOverview() {
                   ))}
                 </dl>
                 <p className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-800 px-5 py-3 text-xs text-slate-500 dark:text-slate-400">
-                  <BookOpen className="size-3.5" /> Built-in course content lives in the code (src/data/course-content).
+                  <BookOpen className="size-3.5" /> Built-in course content comes from the course catalog database.
                 </p>
               </Section>
             </div>

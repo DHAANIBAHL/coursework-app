@@ -11,9 +11,9 @@ import {
   Video,
 } from "lucide-react";
 import { EmptyState, ErrorNote, Loading, PageHeading, Section, StatCard } from "@/components/panel/Panel";
-import { getCourse } from "@/data/courses";
 import { useAuth } from "@/context/AuthContext";
 import { useApi } from "@/lib/api";
+import { useCatalog } from "@/lib/catalog";
 import { teachingCourses } from "@/lib/teaching";
 import { formatDate, percent, relativeTime } from "@/lib/format";
 
@@ -23,12 +23,14 @@ export default function TeachDashboard() {
   const { user } = useAuth();
   // Loaded fresh each visit, so numbers reflect grading done in a course page.
   const { data, error, loading, reload } = useApi("/teach/overview");
+  const catalog = useCatalog();
 
-  if (loading && !data) return <Loading />;
+  if ((loading && !data) || catalog.loading) return <Loading />;
   if (error) return <ErrorNote error={error} onRetry={reload} />;
 
   const { totals, upcomingSessions, recentSubmissions, dueSoon } = data;
-  const courses = teachingCourses(data.courses);
+  const courses = teachingCourses(data.courses, catalog);
+  const titleOf = (slug) => catalog.courseBySlug(slug)?.title ?? slug;
 
   return (
     <>
@@ -48,11 +50,10 @@ export default function TeachDashboard() {
           <Section title={user.role === "admin" ? "Courses with a teacher" : "Your courses"}>
             <ul className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
               {courses.map((c) => {
-                const course = getCourse(c.slug);
                 return (
                   <li key={c.slug} className="flex flex-wrap items-center justify-between gap-4 px-5 py-4">
                     <div>
-                      <p className="font-medium text-slate-900 dark:text-slate-100">{course?.title ?? c.slug}</p>
+                      <p className="font-medium text-slate-900 dark:text-slate-100">{c.title}</p>
                       <p className="text-sm text-slate-500 dark:text-slate-400">
                         {c.students} student{c.students === 1 ? "" : "s"} · quiz average {percent(c.quizAverage)}
                       </p>
@@ -82,7 +83,7 @@ export default function TeachDashboard() {
                       <div className="min-w-0">
                         <p className="truncate text-sm font-medium text-slate-900 dark:text-slate-100">{s.title}</p>
                         <p className="text-xs text-slate-500 dark:text-slate-400">
-                          {getCourse(s.courseSlug)?.title} · {formatDate(s.startsAt, true)} ({relativeTime(s.startsAt)})
+                          {titleOf(s.courseSlug)} · {formatDate(s.startsAt, true)} ({relativeTime(s.startsAt)})
                         </p>
                       </div>
                       <a href={s.meetingUrl} target="_blank" rel="noreferrer" className={`${linkClass} inline-flex shrink-0 items-center gap-1`}>
@@ -112,7 +113,7 @@ export default function TeachDashboard() {
                         />
                       </div>
                       <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                        {a.submitted} of {a.enrolled} handed in · {getCourse(a.courseSlug)?.title}
+                        {a.submitted} of {a.enrolled} handed in · {titleOf(a.courseSlug)}
                       </p>
                     </li>
                   ))}
@@ -133,7 +134,7 @@ export default function TeachDashboard() {
                         <span className="font-medium">{s.studentName}</span> handed in <span className="font-medium">{s.assignmentTitle}</span>
                       </p>
                       <p className="text-xs text-slate-500 dark:text-slate-400">
-                        {getCourse(s.courseSlug)?.title} · {relativeTime(s.submittedAt)}
+                        {titleOf(s.courseSlug)} · {relativeTime(s.submittedAt)}
                       </p>
                     </div>
                     {s.grade === null ? (

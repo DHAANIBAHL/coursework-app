@@ -2,13 +2,15 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ExternalLink, Eye, X } from "lucide-react";
 import { ErrorNote, PageHeading, Section } from "@/components/panel/Panel";
-import { courses } from "@/data/courses";
 import { api, useApi } from "@/lib/api";
+import { useCatalog } from "@/lib/catalog";
 
-// Built-in course text comes from src/data/course-content; this page shows how
-// complete each course is and who teaches it.
+// Built-in courses come from the course catalog (GET /api/courses); this page
+// shows how complete each course is and who teaches it.
 export default function AdminContent() {
   const { data, error, reload } = useApi("/admin/course-teachers");
+  const catalog = useCatalog();
+  const { courses } = catalog;
   const [actionError, setActionError] = useState(null);
 
   async function change(promise) {
@@ -30,10 +32,11 @@ export default function AdminContent() {
     <>
       <PageHeading
         title="Content"
-        description="Every built-in course, how complete it is, and who teaches it. Course text lives in the code (src/data/course-content); teachers add their own material from the teacher panel."
+        description="Every built-in course, how complete it is, and who teaches it. Course text comes from the course catalog database; teachers add their own material from the teacher panel."
       />
       <div className="mb-4 space-y-3">
         <ErrorNote error={error} onRetry={reload} />
+        <ErrorNote error={catalog.error} onRetry={catalog.reload} />
         <ErrorNote error={actionError} />
         {data && data.teachers.length === 0 && (
           <p className="rounded-md bg-blue-50 dark:bg-blue-950/50 px-4 py-3 text-sm text-blue-600 dark:text-blue-400">
@@ -59,22 +62,20 @@ export default function AdminContent() {
             </thead>
             <tbody className="rows-hover divide-y divide-slate-200 dark:divide-slate-800">
               {courses.map((c) => {
-                const videos = c.lessons.filter((l) => l.video).length;
-                const questions = c.quizzes.reduce((sum, q) => sum + q.questions.length, 0);
                 return (
                   <tr key={c.slug}>
                     <td className="px-5 py-3">
                       <p className="font-medium text-slate-900 dark:text-slate-100">{c.title}</p>
-                      <p className="text-xs text-slate-500 dark:text-slate-400">{c.tag}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{c.category}</p>
                     </td>
-                    <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">{c.lessons.length}</td>
-                    <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">{c.quizzes.length}</td>
-                    <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">{questions}</td>
+                    <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">{c.lessonCount}</td>
+                    <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">{c.quizCount}</td>
+                    <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">{c.questionCount}</td>
                     <td className="px-5 py-3 text-right text-slate-700 dark:text-slate-300">
-                      {videos} <span className="text-slate-400 dark:text-slate-500">/ {c.lessons.length}</span>
+                      {c.videoCount} <span className="text-slate-400 dark:text-slate-500">/ {c.lessonCount}</span>
                     </td>
                     <td className="px-5 py-3">
-                      {c.image ? (
+                      {c.imageUrl ? (
                         <span className="text-green-700 dark:text-green-300">Yes</span>
                       ) : (
                         <span className="text-slate-500 dark:text-slate-400">Missing</span>

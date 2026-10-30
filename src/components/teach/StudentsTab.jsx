@@ -4,7 +4,7 @@ import { formatDate, percent } from "@/lib/format";
 // Who's enrolled and how each student is doing.
 export default function StudentsTab({ course, data }) {
   const totalLessons = course?.lessons.length ?? 0;
-  const quizTitle = (id) => course?.quizzes.find((q) => q.id === id)?.title ?? id;
+  const quizTitle = (id) => course?.quizzes.find((q) => q.slug === id)?.title ?? id;
 
   return (
     <div className="space-y-6">
