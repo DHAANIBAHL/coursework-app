@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api, useApi } from "@/lib/api";
+import { recordCatalogRequest } from "@/lib/dataSource";
 
 // Shared readers for the course catalog, which the server serves from the
 // catalog database (GET /api/courses and GET /api/courses/:id).
@@ -9,6 +10,7 @@ import { api, useApi } from "@/lib/api";
 // request is forgotten, so reload() tries again.
 let listRequest = null;
 function fetchCourses() {
+  if (listRequest) recordCatalogRequest("GET /api/courses (shared, already loaded)");
   listRequest ??= api("/courses")
     .then((data) => data.courses)
     .catch((err) => {

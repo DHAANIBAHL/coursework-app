@@ -17,6 +17,7 @@ import TeachCourse from "@/components/teach/TeachCourse";
 import TeachDashboard from "@/components/teach/TeachDashboard";
 import TeachLayout from "@/components/teach/TeachLayout";
 import ContactPage from "@/components/ContactPage";
+import DataSourceBadge from "@/components/DataSourceBadge";
 import HelpPage from "@/components/HelpPage";
 import LandingPage from "@/components/LandingPage";
 import CoursePage from "@/components/CoursePage";
@@ -104,6 +105,7 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
+      {import.meta.env.DEV && <DataSourceBadge />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route
