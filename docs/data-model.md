@@ -2,7 +2,7 @@
 
 Course content (13 courses, 228 lessons, 39 built-in quizzes, 293 questions) is hardcoded in `src/data/`, while everything people do is already in 14 MySQL tables keyed to courses by a text slug. This document lists where every piece of displayed content comes from today, then proposes a relational model that moves the course catalog into MySQL and replaces the slug and text-key links with real foreign keys.
 
-Status: proposal. The app still runs on the current schema. [`database/schema.sql`](../database/schema.sql) builds this model in a new, empty database (`mysql -u root -p learning_platform < database/schema.sql`), and [`database/seed.sql`](../database/seed.sql) fills it with mock data (all 13 courses, 52 modules, 228 lessons, 5 instructors, 20 students, enrollments, progress, quiz attempts and reviews).
+Status: step 1 of the migration path is done. The course catalog now lives in its own MySQL database (`learning_platform`), built by [`database/schema.sql`](../database/schema.sql) and [`database/seed.sql`](../database/seed.sql) (all 13 courses, 52 modules, 228 lessons, plus mock instructors, students, enrollments, progress, quiz attempts and reviews), and every page reads it through the server; `src/data/` has been removed (see [`database/README.md`](../database/README.md) for how content is edited now). Steps 2 and 3 are not started: the live `coursework` database still links to courses by slug. Sections 1 and 2 below describe the code as it was when this proposal was written.
 
 ## 1. Pages and what they display
 
@@ -347,7 +347,7 @@ These tables keep their columns from migrations 003–005; the change is `course
 
 ## 4. Migration path
 
-1. **Catalog tables.** Add `categories`, `courses`, `modules`, `lessons`, `quizzes`, `quiz_questions`, `quiz_options`. A one-off script imports the 13 course files, keeping slugs and quiz ids. The website keeps reading `src/data/` until a read API (`GET /api/courses`, `GET /api/courses/:slug`) replaces `getCourse()`.
+1. **Catalog tables.** Add `categories`, `courses`, `modules`, `lessons`, `quizzes`, `quiz_questions`, `quiz_options`. A one-off script imports the 13 course files, keeping slugs and quiz ids. The website keeps reading `src/data/` until a read API (`GET /api/courses`, `GET /api/courses/:slug`) replaces `getCourse()`. **Done:** every page reads the API and `src/data/` is removed.
 2. **Switch keys.** Add `course_id` beside `course_slug` and `lesson_id` beside `lesson_index`, backfill from the slugs and positions, then drop the old columns. Move `class_quizzes` rows into `quizzes` (`origin = 'teacher'`) and `quiz_key` into `quiz_id`.
 3. **Site content.** Optional: move contact topics and FAQs into the database once there's an admin screen to edit them.
 

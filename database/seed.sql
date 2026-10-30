@@ -4,7 +4,9 @@
 -- 5 instructors, 20 students, 1 admin, 69 enrollments, 44 reviews,
 -- 691 completed lessons, 86 quiz attempts.
 --
--- Course, lesson and quiz text comes from src/data/course-content/. Every
+-- This file is the source of truth for the course content: it was generated
+-- once from the old src/data/ files, which no longer exist. Edit content in the
+-- database, then export it back here (see database/README.md). Every mock
 -- account's password is Demo@1234, and every email ends in @demo.coursework.test.
 -- Rows use explicit ids, and tables are filled parents first.
 --
