@@ -4,8 +4,9 @@ import { useSyncExternalStore } from "react";
 // DataSourceBadge (in development, and to admins). It is a short in-memory
 // list, so recording costs nothing noticeable for other users.
 
-// Set by src/data/courses.js when it is loaded. Every page is bundled
-// together, so this means some code in the app still imports hardcoded data.
+// Set by any module holding hardcoded course data (the old src/data/courses.js
+// did; nothing does now). Every page is bundled together, so this means some
+// code in the app still imports hardcoded data.
 export const hardcodedDataLoaded = () => Boolean(globalThis.__courseworkHardcodedData);
 
 let requests = []; // { page, label, at }, newest last

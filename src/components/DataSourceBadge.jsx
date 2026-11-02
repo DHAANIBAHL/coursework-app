@@ -8,10 +8,10 @@ const timeOf = (date) => date.toLocaleTimeString();
 
 // A corner badge saying where this page's course data came from: "Source:
 // MySQL" with the time it was fetched when it came from the catalog API, or
-// "Source: hardcoded" if any code has loaded the old src/data/ files, so a
-// missed page stands out. Only in development or for admins; students and
-// guests never see it. It never shows the database name (only the admin
-// Data source status panel does).
+// "Source: hardcoded" if any code has loaded hardcoded course data (the old
+// src/data/ files did; they are gone), so a missed page would stand out. Only
+// in development or for admins; students and guests never see it. It never
+// shows the database name (only the admin Data source status panel does).
 export default function DataSourceBadge() {
   const { user } = useAuth();
   if (!import.meta.env.DEV && user?.role !== "admin") return null;
@@ -36,7 +36,7 @@ function Badge() {
         <div className="mb-2 rounded-md border border-slate-200 bg-white p-3 text-slate-700 shadow-lg dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
           {hardcoded && (
             <p className="mb-2 text-red-700 dark:text-red-300">
-              src/data/courses.js was loaded. Some code still imports it; <code>npm run lint</code> names the file.
+              Hardcoded course data was loaded. Some code still imports it; <code>npm run lint</code> names the file.
             </p>
           )}
           <p className="font-medium text-slate-900 dark:text-slate-100">Course data requests on this page</p>
