@@ -105,7 +105,7 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
-      {import.meta.env.DEV && <DataSourceBadge />}
+      <DataSourceBadge />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route
