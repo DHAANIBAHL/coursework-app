@@ -9,10 +9,14 @@ import { recordCatalogRequest } from "@/lib/dataSource";
 // it while the site is open (a layout and its page both need it). A failed
 // request is forgotten, so reload() tries again.
 let listRequest = null;
+let listFetchedAt = null; // when the shared list arrived, for DataSourceBadge
 function fetchCourses() {
-  if (listRequest) recordCatalogRequest("GET /api/courses (shared, already loaded)");
+  if (listRequest && listFetchedAt) recordCatalogRequest("GET /api/courses (shared)", listFetchedAt);
   listRequest ??= api("/courses")
-    .then((data) => data.courses)
+    .then((data) => {
+      listFetchedAt = new Date();
+      return data.courses;
+    })
     .catch((err) => {
       listRequest = null;
       throw err;

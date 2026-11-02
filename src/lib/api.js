@@ -7,8 +7,6 @@ import { recordCatalogRequest } from "@/lib/dataSource";
 // and `status` so pages can react to specific cases.
 export async function api(path, { method = "GET", body } = {}) {
   const isForm = body instanceof FormData; // file uploads
-  // In development, the DataSourceBadge lists the catalog requests each page makes.
-  if (method === "GET" && /^\/(courses|search)\b/.test(path)) recordCatalogRequest(`GET /api${path}`);
   let response;
   try {
     response = await fetch(`/api${path}`, {
@@ -27,6 +25,8 @@ export async function api(path, { method = "GET", body } = {}) {
     error.status = response.status;
     throw error;
   }
+  // DataSourceBadge shows where each page's course data came from, and when.
+  if (method === "GET" && /^\/(courses|search)\b/.test(path)) recordCatalogRequest(`GET /api${path}`);
   return data;
 }
 
