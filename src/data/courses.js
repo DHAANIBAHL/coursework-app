@@ -1,3 +1,7 @@
+// Tells the development-only DataSourceBadge that hardcoded course data has
+// been loaded. No page should import this file any more (a lint rule blocks it).
+globalThis.__courseworkHardcodedData = true;
+
 // Each course lives in its own file under ./course-content. Each needs a
 // unique `slug` — it becomes the URL: /course/<slug>
 import webDesign from "./course-content/web-design.js";

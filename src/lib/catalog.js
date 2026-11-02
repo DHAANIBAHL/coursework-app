@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { api, useApi } from "@/lib/api";
+import { recordCatalogRequest } from "@/lib/dataSource";
 
 // Shared readers for the course catalog, which the server serves from the
 // catalog database (GET /api/courses and GET /api/courses/:id).
@@ -8,9 +9,14 @@ import { api, useApi } from "@/lib/api";
 // it while the site is open (a layout and its page both need it). A failed
 // request is forgotten, so reload() tries again.
 let listRequest = null;
+let listFetchedAt = null; // when the shared list arrived, for DataSourceBadge
 function fetchCourses() {
+  if (listRequest && listFetchedAt) recordCatalogRequest("GET /api/courses (shared)", listFetchedAt);
   listRequest ??= api("/courses")
-    .then((data) => data.courses)
+    .then((data) => {
+      listFetchedAt = new Date();
+      return data.courses;
+    })
     .catch((err) => {
       listRequest = null;
       throw err;

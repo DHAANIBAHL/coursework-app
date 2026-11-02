@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { recordCatalogRequest } from "@/lib/dataSource";
 
 // Talks to the Express server in the coursework-server folder.
 // Vite forwards every /api request to it (see vite.config.js).
@@ -24,6 +25,8 @@ export async function api(path, { method = "GET", body } = {}) {
     error.status = response.status;
     throw error;
   }
+  // DataSourceBadge shows where each page's course data came from, and when.
+  if (method === "GET" && /^\/(courses|search)\b/.test(path)) recordCatalogRequest(`GET /api${path}`);
   return data;
 }
 
