@@ -144,7 +144,14 @@ function Quiz({ course, quiz }) {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="mt-10 space-y-6">
+        {/* The server hides quizzes without questions; this covers a stale link. */}
+        {questions.length === 0 && (
+          <p className="mt-10 rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-6 text-slate-500 dark:text-slate-400">
+            This quiz doesn't have any questions yet.
+          </p>
+        )}
+
+        <form onSubmit={handleSubmit} className={`mt-10 space-y-6 ${questions.length === 0 ? "hidden" : ""}`}>
           {questions.map((question, index) => {
             const chosen = answers[question.id];
             const result = resultFor[question.id];

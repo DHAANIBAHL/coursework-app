@@ -6,7 +6,7 @@ import { ErrorNote, Loading } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { useApi } from "@/lib/api";
-import { nextLessonIndex, useEnrollment } from "@/lib/learning";
+import { completedWithin, nextLessonIndex, percentDone, useEnrollment } from "@/lib/learning";
 
 export default function CoursePage() {
   // Reads ":slug" from the URL, e.g. /course/web-design -> "web-design"
@@ -98,6 +98,11 @@ export default function CoursePage() {
                 {module.lessons.map((lesson) => (
                   <Lesson key={lesson.id} lesson={lesson} enrollment={enrollment} />
                 ))}
+                {module.lessons.length === 0 && (
+                  <p className="rounded-lg border border-dashed border-slate-300 dark:border-slate-700 p-4 text-sm text-slate-500 dark:text-slate-400">
+                    No lessons in this module yet.
+                  </p>
+                )}
               </div>
             </section>
           ))
@@ -210,8 +215,8 @@ function EnrollPanel({ slug, lessonCount, enrollment }) {
     );
   }
 
-  const done = completed.size;
   const total = lessonCount;
+  const done = completedWithin(completed, total).size;
   const next = nextLessonIndex(total, completed);
   return (
     <div className="mt-8 rounded-lg border border-slate-200 dark:border-slate-800 p-5">
@@ -231,7 +236,7 @@ function EnrollPanel({ slug, lessonCount, enrollment }) {
         </div>
       </div>
       <div className="mt-3 h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-        <div className="h-full rounded-full bg-green-600 dark:bg-green-400 transition-all" style={{ width: `${total ? (done / total) * 100 : 0}%` }} />
+        <div className="h-full rounded-full bg-green-600 dark:bg-green-400 transition-all" style={{ width: `${percentDone(completed, total)}%` }} />
       </div>
       {error && <p className="mt-2 text-sm text-red-600 dark:text-red-400">{error.message}</p>}
     </div>

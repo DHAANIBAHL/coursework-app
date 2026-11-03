@@ -9,6 +9,7 @@ import { relatedLinkForStudent } from "@/lib/announcements";
 import SubmitAssignment from "@/components/learn/SubmitAssignment";
 import { useApi } from "@/lib/api";
 import { useCourse } from "@/lib/catalog";
+import { completedWithin, percentDone } from "@/lib/learning";
 import { fileSize, formatDate, percent, plural, relativeTime } from "@/lib/format";
 import { useNow } from "@/lib/useNow";
 
@@ -154,14 +155,14 @@ export default function LearnCourse({ preview = false }) {
 }
 
 function Overview({ slug, course, data }) {
-  const completed = new Set(data.completedLessons);
   const total = course.lessons.length;
+  const completed = completedWithin(data.completedLessons, total);
   return (
     <div className="space-y-6">
       <Section title={`Progress: ${completed.size} of ${total} lessons`}>
         <div className="px-5 pt-4">
           <div className="h-2 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-            <div className="h-full rounded-full bg-green-600 dark:bg-green-400" style={{ width: `${(completed.size / total) * 100}%` }} />
+            <div className="h-full rounded-full bg-green-600 dark:bg-green-400" style={{ width: `${percentDone(completed, total)}%` }} />
           </div>
         </div>
         <ol className="grid gap-x-6 gap-y-1 p-5 sm:grid-cols-2">

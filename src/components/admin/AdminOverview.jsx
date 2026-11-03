@@ -5,6 +5,7 @@ import { useApi } from "@/lib/api";
 import { formatDate } from "@/lib/format";
 import { ROLE_LABELS } from "@/lib/roles";
 import { useCatalog } from "@/lib/catalog";
+import DataFlowCheck from "@/components/admin/DataFlowCheck";
 import DataSourceStatus from "@/components/admin/DataSourceStatus";
 
 export default function AdminOverview() {
@@ -105,8 +106,9 @@ export default function AdminOverview() {
           </div>
         </div>
       ) : null}
-      <div className="mt-6">
+      <div className="mt-6 space-y-6">
         <DataSourceStatus />
+        <DataFlowCheck />
       </div>
     </>
   );

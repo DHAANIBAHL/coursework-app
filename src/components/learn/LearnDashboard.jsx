@@ -9,7 +9,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useApi } from "@/lib/api";
 import { useCatalog } from "@/lib/catalog";
 import { formatDate, percent, relativeTime } from "@/lib/format";
-import { nextLessonIndex } from "@/lib/learning";
+import { completedWithin, nextLessonIndex, percentDone } from "@/lib/learning";
 import { useNow } from "@/lib/useNow";
 
 const linkClass = "text-sm font-medium text-blue-600 dark:text-blue-400 hover:underline";
@@ -82,9 +82,9 @@ export default function LearnDashboard() {
             {courses.map((e) => {
               const course = catalog.courseBySlug(e.slug);
               const total = course.lessonCount;
-              const completed = new Set(e.completedLessons ?? []);
+              const completed = completedWithin(e.completedLessons ?? [], total);
               const next = nextLessonIndex(total, completed);
-              const finished = completed.size >= total;
+              const finished = total > 0 && completed.size >= total;
               return (
                 <li key={e.slug} className="flex flex-wrap items-center gap-4 px-5 py-4">
                   {course.imageUrl ? (
@@ -96,7 +96,7 @@ export default function LearnDashboard() {
                     <p className="font-medium text-slate-900 dark:text-slate-100">{course.title}</p>
                     <div className="mt-2 flex items-center gap-3">
                       <div className="h-1.5 max-w-xs flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                        <div className="h-full rounded-full bg-green-600 dark:bg-green-400" style={{ width: `${(completed.size / total) * 100}%` }} />
+                        <div className="h-full rounded-full bg-green-600 dark:bg-green-400" style={{ width: `${percentDone(completed, total)}%` }} />
                       </div>
                       <span className="text-xs text-slate-500 dark:text-slate-400">
                         {completed.size}/{total} lessons
@@ -107,9 +107,11 @@ export default function LearnDashboard() {
                     <Link to={`/my-learning/courses/${e.slug}`} className={linkClass}>
                       Classroom
                     </Link>
-                    <Link to={`/course/${e.slug}#lesson-${next + 1}`} className={buttonVariants({ size: "sm" })}>
-                      {finished ? "Review" : completed.size === 0 ? "Start" : `Lesson ${next + 1}`}
-                    </Link>
+                    {total > 0 && (
+                      <Link to={`/course/${e.slug}#lesson-${next + 1}`} className={buttonVariants({ size: "sm" })}>
+                        {finished ? "Review" : completed.size === 0 ? "Start" : `Lesson ${next + 1}`}
+                      </Link>
+                    )}
                   </div>
                 </li>
               );

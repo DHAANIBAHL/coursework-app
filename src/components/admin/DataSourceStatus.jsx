@@ -33,15 +33,15 @@ export default function DataSourceStatus() {
       ) : (
         <>
           <dl className="grid grid-cols-2 gap-4 px-5 py-4 text-sm sm:grid-cols-4">
-            {[
-              ["Courses", data.counts.courses],
-              ["Modules", data.counts.modules],
-              ["Lessons", data.counts.lessons],
-              ["Quizzes", data.counts.quizzes],
-            ].map(([label, value]) => (
-              <div key={label}>
-                <dt className="text-slate-500 dark:text-slate-400">{label}</dt>
-                <dd className="text-xl font-semibold text-slate-900 dark:text-slate-100">{value}</dd>
+            {/* Counts are what the site shows; drafts, archived courses and
+                quizzes without questions only appear in the database total. */}
+            {["courses", "modules", "lessons", "quizzes"].map((key) => (
+              <div key={key}>
+                <dt className="capitalize text-slate-500 dark:text-slate-400">{key}</dt>
+                <dd className="text-xl font-semibold text-slate-900 dark:text-slate-100">{data.counts[key]}</dd>
+                {data.totals && data.totals[key] !== data.counts[key] && (
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{data.totals[key]} in the database</p>
+                )}
               </div>
             ))}
           </dl>
