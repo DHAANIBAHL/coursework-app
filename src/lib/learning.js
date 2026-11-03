@@ -65,6 +65,18 @@ export function useEnrollment(slug) {
   };
 }
 
+// The completed lesson indexes that are real lessons of a course with
+// `totalLessons`. Progress is stored by position in the live database, so if
+// lessons were removed from a course, older progress could point past the end.
+export function completedWithin(completed, totalLessons) {
+  return new Set([...completed].filter((i) => i >= 0 && i < totalLessons));
+}
+
+// Share of the course completed, 0–100, for progress bars.
+export function percentDone(completed, totalLessons) {
+  return totalLessons > 0 ? (completedWithin(completed, totalLessons).size / totalLessons) * 100 : 0;
+}
+
 // Index of the first lesson not yet completed (or the last lesson if all are).
 export function nextLessonIndex(totalLessons, completed) {
   for (let i = 0; i < totalLessons; i++) if (!completed.has(i)) return i;

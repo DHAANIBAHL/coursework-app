@@ -39,3 +39,15 @@ Keep these unchanged once published, because the live `coursework` database refe
 - a built-in quiz's `slug` (scores are stored as `builtin:<quiz slug>`).
 
 A lesson's `position` counts across the whole course and is how progress is stored, so add new lessons at the end of a course rather than in the middle.
+
+## Test with awkward data
+
+`edge-cases.sql` is a small catalog of awkward cases: a course that has fewer lessons than students have completed, unicode and `<script>` text, empty courses, modules and quizzes, unpublished and archived courses. Load it into a throwaway database (the commands are at the top of the file) and start the server against it without touching anything else:
+
+```sh
+cd ../coursework-server
+CATALOG_DB_NAME=lp_edge npm run dev        # Git Bash
+$env:CATALOG_DB_NAME="lp_edge"; npm run dev # PowerShell (close the window afterwards to reset it)
+```
+
+The site should hide drafts, archived courses and quizzes without questions, never run the `<script>` text, and keep progress within each course's lessons. **Admin → Overview → Data flow check** then lists every way the live database no longer fits this catalog (with the real `learning_platform` it should say all checks pass). Drop the database when you are done: `mysql -u root -p -e "DROP DATABASE lp_edge;"`.
